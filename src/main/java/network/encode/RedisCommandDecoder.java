@@ -1,7 +1,9 @@
 package network.encode;
 
+import container.DataBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import network.model.RedisCommand;
 import network.model.RedisCommandDesc;
 
@@ -27,7 +29,7 @@ public class RedisCommandDecoder {
             return null;
         }
 
-        return new RedisCommand(args, ctx);
+        return new RedisCommand(args, ctx, (DataBase) ctx.attr(AttributeKey.valueOf("DB")).get());
 
     }
 }

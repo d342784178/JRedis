@@ -1,5 +1,6 @@
 package network;
 
+import container.DataBase;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -7,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.AttributeKey;
 import network.handler.CommandExecutorHandler;
 import network.handler.RedisFrameDecodeHandler;
 
@@ -28,6 +30,7 @@ public class RedisServer {
         try {
             ServerBootstrap sb = new ServerBootstrap();
             sb.group(group) // 绑定线程池
+              .childAttr(AttributeKey.valueOf("DB"), new DataBase())
               .channel(NioServerSocketChannel.class) // 指定使用的channel
               .localAddress(this.port)// 绑定监听端口
               .childHandler(new ChannelInitializer<SocketChannel>() { // 绑定客户端连接时候触发操作

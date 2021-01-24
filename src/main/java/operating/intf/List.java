@@ -6,7 +6,7 @@ package operating.intf;
  * Date: 2020-12-12
  * Time: 16:28
  */
-public interface List {
+public interface List extends RedisObject {
     /**
      * 左侧入队
      * O(1)

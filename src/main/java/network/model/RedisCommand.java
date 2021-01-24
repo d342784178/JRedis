@@ -2,6 +2,7 @@ package network.model;
 
 import command.CommandManager;
 import command.ICommand;
+import container.DataBase;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 
@@ -13,17 +14,21 @@ import lombok.Getter;
  */
 public class RedisCommand {
     @Getter
-    private String[]              command;
+    private String[]              args;
     @Getter
     private ChannelHandlerContext ctx;
 
-    public RedisCommand(String[] command, ChannelHandlerContext ctx) {
-        this.command = command;
+    @Getter
+    private DataBase dataBase;
+
+    public RedisCommand(String[] args, ChannelHandlerContext ctx, DataBase dataBase) {
+        this.args = args;
         this.ctx = ctx;
+        this.dataBase = dataBase;
     }
 
     public Object exec() {
-        ICommand iCommand = CommandManager.obtainCommand(command[0]);
+        ICommand iCommand = CommandManager.obtainCommand(args[0]);
         return iCommand.execute(this);
     }
 }
