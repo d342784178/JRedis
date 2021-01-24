@@ -1,6 +1,6 @@
-package object;
+package operating;
 
-import object.intf.List;
+import operating.intf.List;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;

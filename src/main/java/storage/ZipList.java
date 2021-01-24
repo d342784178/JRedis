@@ -1,4 +1,4 @@
-package datastructure;
+package storage;
 
 import utils.ByteArray;
 import utils.ByteUtil;

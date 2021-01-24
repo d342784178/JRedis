@@ -1,7 +1,7 @@
-package object;
+package operating;
 
-import datastructure.ZipList;
-import object.intf.List;
+import storage.ZipList;
+import operating.intf.List;
 
 /**
  * Desc:
