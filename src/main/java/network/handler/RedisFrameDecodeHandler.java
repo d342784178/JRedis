@@ -3,8 +3,8 @@ package network.handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import network.encode.RedisCommandDecoder;
-import network.model.RedisCommand;
+import network.encode.RedisCommandCodec;
+import command.model.RedisCommand;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -17,7 +17,7 @@ import java.util.List;
  * Time: 16:10
  */
 public class RedisFrameDecodeHandler extends ByteToMessageDecoder {
-    RedisCommandDecoder decoder = new RedisCommandDecoder();
+    RedisCommandCodec decoder = new RedisCommandCodec();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

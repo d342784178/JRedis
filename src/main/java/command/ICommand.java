@@ -1,6 +1,6 @@
 package command;
 
-import network.model.RedisCommand;
+import command.model.RedisCommand;
 
 /**
  * Desc:

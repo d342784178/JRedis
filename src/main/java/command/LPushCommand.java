@@ -3,7 +3,7 @@ package command;
 import command.executor.Executors;
 import command.executor.IExecutor;
 import command.executor.SingleTargetExecutor;
-import network.model.RedisCommand;
+import command.model.RedisCommand;
 import operating.ZipListList;
 import operating.intf.List;
 

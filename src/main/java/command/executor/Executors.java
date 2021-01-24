@@ -1,6 +1,7 @@
 package command.executor;
 
-import network.model.RedisCommand;
+import command.model.IRedisResult;
+import command.model.RedisCommand;
 import org.testng.collections.Maps;
 
 import java.util.Map;
@@ -17,6 +18,7 @@ public class Executors {
     static {
         map.put(SingleTargetExecutor.class, new SingleTargetExecutor());
         map.put(MultiTargetExecutor.class, new MultiTargetExecutor());
+        map.put(ReadExecutor.class, new ReadExecutor());
     }
 
     private AbstractExecutor executor;
@@ -29,7 +31,7 @@ public class Executors {
         this.executor = executor;
     }
 
-    public <T> T execute(RedisCommand command, IExecutor.ExecuteCallback callback) {
+    public IRedisResult execute(RedisCommand command, IExecutor.ExecuteCallback callback) {
         return executor.execute(command, callback);
     }
 }

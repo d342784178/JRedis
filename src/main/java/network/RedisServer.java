@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
 import network.handler.CommandExecutorHandler;
 import network.handler.RedisFrameDecodeHandler;
+import network.handler.RedisFrameEncodeHandler;
 
 /**
  * Desc:
@@ -38,8 +39,11 @@ public class RedisServer {
                   @Override
                   protected void initChannel(SocketChannel ch) throws Exception {
                       //ch.pipeline().addLast(new EchoHandler());
+                      ch.pipeline().addLast(new RedisFrameEncodeHandler());
+
                       ch.pipeline().addLast(new RedisFrameDecodeHandler());
                       ch.pipeline().addLast(new CommandExecutorHandler());
+
 
 
                   }

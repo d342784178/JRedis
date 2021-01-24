@@ -1,11 +1,12 @@
 package network.encode;
 
+import command.model.IRedisResult;
 import container.DataBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-import network.model.RedisCommand;
-import network.model.RedisCommandDesc;
+import command.model.RedisCommand;
+import network.RedisCommandDesc;
 
 /**
  * Desc:
@@ -13,7 +14,7 @@ import network.model.RedisCommandDesc;
  * Date: 2021-01-24
  * Time: 16:12
  */
-public class RedisCommandDecoder {
+public class RedisCommandCodec {
 
     public RedisCommand decode(ChannelHandlerContext ctx, ByteBuf bytebuf) {
         bytebuf.markReaderIndex();
@@ -30,6 +31,10 @@ public class RedisCommandDecoder {
         }
 
         return new RedisCommand(args, ctx, (DataBase) ctx.attr(AttributeKey.valueOf("DB")).get());
+    }
+
+    public ByteBuf encode(IRedisResult result) {
+        return result.encode();
 
     }
 }

@@ -1,6 +1,7 @@
 package command.executor;
 
-import network.model.RedisCommand;
+import command.model.RedisCommand;
+import command.model.IRedisResult;
 import operating.intf.RedisObject;
 
 /**
@@ -9,9 +10,9 @@ import operating.intf.RedisObject;
  * Date: 2021-01-24
  * Time: 17:46
  */
-public class MultiTargetExecutor extends AbstractExecutor {
+public class MultiTargetExecutor extends WriteExecutor {
     @Override
-    public <T> T execute(RedisCommand command, ExecuteCallback callback) {
+    public IRedisResult execute(RedisCommand command, ExecuteCallback callback) {
         String[] args = command.getArgs();
 
         int i = 1;

@@ -1,6 +1,7 @@
 package command.executor;
 
-import network.model.RedisCommand;
+import command.model.RedisCommand;
+import command.model.IRedisResult;
 import operating.intf.RedisObject;
 
 /**
@@ -10,7 +11,7 @@ import operating.intf.RedisObject;
  * Time: 17:49
  */
 public interface IExecutor {
-    <T> T execute(RedisCommand command, ExecuteCallback callback);
+    IRedisResult execute(RedisCommand command, ExecuteCallback callback);
 
 
     interface ExecuteCallback<T extends RedisObject> {

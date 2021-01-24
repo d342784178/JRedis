@@ -1,6 +1,12 @@
 package command;
 
-import network.model.RedisCommand;
+import command.executor.Executors;
+import command.executor.IExecutor;
+import command.executor.ReadExecutor;
+import command.executor.SingleTargetExecutor;
+import command.model.RedisCommand;
+import operating.ZipListList;
+import operating.intf.List;
 
 /**
  * Desc:
@@ -16,6 +22,17 @@ public class LPopCommand implements ICommand {
 
     @Override
     public Object execute(RedisCommand command) {
-        return true;
+        return Executors.build(ReadExecutor.class)
+                        .execute(command, new IExecutor.ExecuteCallback<List>() {
+                            @Override
+                            public <T> T execute(List redisObject, String value) {
+                                return (T) redisObject.lpop();
+                            }
+
+                            @Override
+                            public List find(String key) {
+                                return (List) command.getDataBase().getRedisObject(key);
+                            }
+                        });
     }
 }

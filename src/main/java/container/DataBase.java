@@ -19,7 +19,9 @@ public class DataBase {
     }
 
     public RedisObject getRedisObjectOrDefault(String key, RedisObject redisObject) {
-        return redisObjectMap.getOrDefault(key, redisObject);
+        RedisObject orDefault = redisObjectMap.getOrDefault(key, redisObject);
+        redisObjectMap.put(key, orDefault);
+        return orDefault;
     }
 
 }

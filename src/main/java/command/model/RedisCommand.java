@@ -1,4 +1,4 @@
-package network.model;
+package command.model;
 
 import command.CommandManager;
 import command.ICommand;
