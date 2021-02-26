@@ -1,8 +1,8 @@
 package command;
 
 import command.model.IRedisResult;
-import command.model.IntRedisResult;
-import command.model.RedisCommand;
+import container.DataBase;
+import operating.intf.List;
 
 /**
  * Desc:
@@ -10,14 +10,20 @@ import command.model.RedisCommand;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class LRemCommand implements ICommand {
+public class LRemCommand extends AbstractCommand<List> {
     @Override
     public String name() {
         return CommandConstants.LREM;
     }
 
+
     @Override
-    public IRedisResult execute(RedisCommand command) {
-        return new IntRedisResult(1);
+    protected IRedisResult execute(DataBase db, String keyStr, List list, String[] args) {
+        return null;
+    }
+
+    @Override
+    public Class[] support() {
+        return new Class[]{List.class};
     }
 }

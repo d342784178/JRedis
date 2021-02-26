@@ -3,7 +3,7 @@ package command.executor;
 import command.model.IntRedisResult;
 import command.model.RedisCommand;
 import command.model.IRedisResult;
-import operating.intf.RedisObject;
+import operating.intf.IRedisObject;
 
 /**
  * Desc:
@@ -16,11 +16,11 @@ public class SingleTargetExecutor extends WriteExecutor {
     @Override
     public IRedisResult execute(RedisCommand command, ExecuteCallback callback) {
         String[]    args        = command.getArgs();
-        String      key         = args[1];
-        RedisObject redisObject = callback.find(key);
-        int         num         = 0;
+        String       key          = args[1];
+        IRedisObject IRedisObject = callback.find(key);
+        int          num          = 0;
         for (int i = 2; i < args.length; i++) {
-            callback.execute(redisObject, args[i]);
+            callback.execute(IRedisObject, args[i]);
             num += 1;
         }
         return new IntRedisResult(num);

@@ -9,10 +9,11 @@ import command.model.RedisCommand;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public interface ICommand<T extends IRedisResult> {
+public interface ICommand {
     String name();
 
-    T execute(RedisCommand command);
+    IRedisResult execute(RedisCommand command);
 
+    Class<?>[] support();
 
 }

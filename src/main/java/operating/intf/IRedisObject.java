@@ -6,5 +6,5 @@ package operating.intf;
  * Date: 2021-01-24
  * Time: 17:09
  */
-public interface RedisObject {
+public interface IRedisObject {
 }

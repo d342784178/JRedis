@@ -2,7 +2,7 @@ package command.executor;
 
 import command.model.RedisCommand;
 import command.model.IRedisResult;
-import operating.intf.RedisObject;
+import operating.intf.IRedisObject;
 
 /**
  * Desc:
@@ -14,12 +14,12 @@ public class ReadExecutor extends AbstractExecutor {
     @Override
     public IRedisResult execute(RedisCommand command, ExecuteCallback callback) {
         String[]    args        = command.getArgs();
-        String      key         = args[1];
-        RedisObject redisObject = callback.find(key);
-        if (redisObject == null) {
+        String       key          = args[1];
+        IRedisObject IRedisObject = callback.find(key);
+        if (IRedisObject == null) {
             return null;
         }
-        return callback.execute(redisObject, null);
+        return callback.execute(IRedisObject, null);
 
     }
 }

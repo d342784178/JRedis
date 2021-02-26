@@ -23,6 +23,8 @@ public class CommandManager {
         predicate.test(new LPopCommand());
         predicate.test(new LRemCommand());
         predicate.test(new LLenCommand());
+        predicate.test(new DelCommand());
+        predicate.test(new KeysCommand());
     }
 
     public static ICommand obtainCommand(String commandConstants) {

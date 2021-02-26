@@ -2,7 +2,7 @@ package command.executor;
 
 import command.model.RedisCommand;
 import command.model.IRedisResult;
-import operating.intf.RedisObject;
+import operating.intf.IRedisObject;
 
 /**
  * Desc:
@@ -18,10 +18,10 @@ public class MultiTargetExecutor extends WriteExecutor {
         int i = 1;
         while (true) {
             if (i + 2 < args.length) {
-                String      key         = args[i++];
-                RedisObject redisObject = callback.find(key);
-                if (redisObject != null) {
-                    callback.execute(redisObject, args[i++]);
+                String       key          = args[i++];
+                IRedisObject IRedisObject = callback.find(key);
+                if (IRedisObject != null) {
+                    callback.execute(IRedisObject, args[i++]);
                 }
             } else {
                 System.out.println("参数不完整");

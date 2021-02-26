@@ -1,11 +1,8 @@
 package command;
 
-import command.executor.Executors;
-import command.executor.IExecutor;
-import command.executor.ReadExecutor;
 import command.model.IRedisResult;
-import command.model.RedisCommand;
 import command.model.StrRedisResult;
+import container.DataBase;
 import operating.intf.List;
 
 /**
@@ -14,25 +11,20 @@ import operating.intf.List;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class LPopCommand implements ICommand {
+public class LPopCommand extends AbstractCommand<List> {
     @Override
     public String name() {
         return CommandConstants.LPOP;
     }
 
     @Override
-    public IRedisResult execute(RedisCommand command) {
-        return Executors.build(ReadExecutor.class)
-                        .execute(command, new IExecutor.ExecuteCallback<List>() {
-                            @Override
-                            public StrRedisResult execute(List redisObject, String value) {
-                                return new StrRedisResult(redisObject.lpop());
-                            }
+    protected IRedisResult execute(DataBase db, String keyStr, List t, String[] args) {
+        byte[] lpop = t.lpop();
+        return new StrRedisResult(lpop);
+    }
 
-                            @Override
-                            public List find(String key) {
-                                return (List) command.getDataBase().getRedisObject(key);
-                            }
-                        });
+    @Override
+    public Class<?>[] support() {
+        return new Class[]{List.class};
     }
 }

@@ -1,13 +1,13 @@
 package command;
 
-import command.executor.Executors;
-import command.executor.IExecutor;
-import command.executor.SingleTargetExecutor;
 import command.model.IRedisResult;
-import command.model.RedisCommand;
-import command.model.StrRedisResult;
+import command.model.IntRedisResult;
+import container.DataBase;
 import operating.ZipListList;
+import operating.intf.IRedisObject;
 import operating.intf.List;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Desc:
@@ -15,27 +15,30 @@ import operating.intf.List;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class LPushCommand extends AbstractCommand {
+public class LPushCommand extends AbstractCommand<List> {
     @Override
     public String name() {
         return CommandConstants.LPUSH;
     }
 
     @Override
-    public IRedisResult execute(RedisCommand command) {
-        return Executors.build(SingleTargetExecutor.class)
-                        .execute(command, new IExecutor.ExecuteCallback<List>() {
-                            @Override
-                            public StrRedisResult execute(List redisObject, String value) {
-                                redisObject.lpush(value.getBytes());
-                                return null;
-                            }
+    protected IRedisResult execute(DataBase db, String keyStr, List t, String[] args) {
+        int num = 0;
+        for (int i = 2; i < args.length; i++) {
+            t.lpush(args[i].getBytes(StandardCharsets.UTF_8));
+            num += 1;
+        }
+        return new IntRedisResult(num);
+    }
 
-                            @Override
-                            public List find(String key) {
-                                return (List) command.getDataBase().getRedisObjectOrDefault(key, new ZipListList());
-                            }
-                        });
+    @Override
+    protected IRedisObject newWhenNotExist() {
+        return new ZipListList();
+    }
+
+    @Override
+    public Class<?>[] support() {
+        return new Class[]{List.class};
     }
 
 }

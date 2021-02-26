@@ -1,7 +1,8 @@
 package command;
 
+import command.model.ArrayRedisResult;
 import command.model.IRedisResult;
-import command.model.IntRedisResult;
+import command.model.RedisCommand;
 import container.DataBase;
 import operating.intf.List;
 
@@ -11,15 +12,16 @@ import operating.intf.List;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class LLenCommand extends AbstractCommand<List> {
+public class KeysCommand extends AbstractCommand {
     @Override
     public String name() {
-        return CommandConstants.LLEN;
+        return CommandConstants.KEYS;
     }
 
     @Override
-    protected IRedisResult execute(DataBase db, String keyStr, List list, String[] args) {
-        return new IntRedisResult(list.llen());
+    public IRedisResult execute(RedisCommand command) {
+        DataBase dataBase = command.getDataBase();
+        return new ArrayRedisResult(dataBase.keys(command.getArgs()[1]));
     }
 
     @Override
