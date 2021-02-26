@@ -3,7 +3,7 @@ package command;
 import command.executor.Executors;
 import command.executor.IExecutor;
 import command.executor.ReadExecutor;
-import command.executor.SingleTargetExecutor;
+import command.model.IRedisResult;
 import command.model.IntRedisResult;
 import command.model.RedisCommand;
 import operating.ZipListList;
@@ -22,7 +22,7 @@ public class LLenCommand implements ICommand {
     }
 
     @Override
-    public Object execute(RedisCommand command) {
+    public IRedisResult execute(RedisCommand command) {
         return Executors.build(ReadExecutor.class)
                         .execute(command, new IExecutor.ExecuteCallback<List>() {
                             @Override

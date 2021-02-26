@@ -1,5 +1,7 @@
 package command;
 
+import command.model.IRedisResult;
+import command.model.IntRedisResult;
 import command.model.RedisCommand;
 
 /**
@@ -15,7 +17,7 @@ public class LRemCommand implements ICommand {
     }
 
     @Override
-    public Object execute(RedisCommand command) {
-        return true;
+    public IRedisResult execute(RedisCommand command) {
+        return new IntRedisResult(1);
     }
 }

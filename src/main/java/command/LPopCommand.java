@@ -3,11 +3,9 @@ package command;
 import command.executor.Executors;
 import command.executor.IExecutor;
 import command.executor.ReadExecutor;
-import command.executor.SingleTargetExecutor;
 import command.model.IRedisResult;
 import command.model.RedisCommand;
 import command.model.StrRedisResult;
-import operating.ZipListList;
 import operating.intf.List;
 
 /**
@@ -23,7 +21,7 @@ public class LPopCommand implements ICommand {
     }
 
     @Override
-    public Object execute(RedisCommand command) {
+    public IRedisResult execute(RedisCommand command) {
         return Executors.build(ReadExecutor.class)
                         .execute(command, new IExecutor.ExecuteCallback<List>() {
                             @Override
