@@ -3,6 +3,7 @@ package command.model;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;
 
@@ -12,8 +13,10 @@ import java.nio.charset.StandardCharsets;
  * Date: 2021-01-24
  * Time: 21:18
  */
+@ToString
 public class IntRedisResult implements IRedisResult {
     @Getter
+
     private int num;
 
     public IntRedisResult(int num) {
@@ -22,8 +25,8 @@ public class IntRedisResult implements IRedisResult {
 
     @Override
     public ByteBuf encode() {
-        byte[]  intBytes  = String.valueOf(num).getBytes(StandardCharsets.UTF_8);
-        ByteBuf result = UnpooledByteBufAllocator.DEFAULT.buffer(intBytes.length + 3);
+        byte[]  intBytes = String.valueOf(num).getBytes(StandardCharsets.UTF_8);
+        ByteBuf result   = UnpooledByteBufAllocator.DEFAULT.buffer(intBytes.length + 3);
         result.writeByte(':');
         result.writeBytes(intBytes);
         result.writeByte('\r');

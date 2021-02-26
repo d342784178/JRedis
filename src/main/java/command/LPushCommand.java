@@ -4,6 +4,7 @@ import command.executor.Executors;
 import command.executor.IExecutor;
 import command.executor.SingleTargetExecutor;
 import command.model.RedisCommand;
+import command.model.StrRedisResult;
 import operating.ZipListList;
 import operating.intf.List;
 
@@ -24,7 +25,7 @@ public class LPushCommand extends AbstractCommand {
         return Executors.build(SingleTargetExecutor.class)
                         .execute(command, new IExecutor.ExecuteCallback<List>() {
                             @Override
-                            public <T> T execute(List redisObject, String value) {
+                            public StrRedisResult execute(List redisObject, String value) {
                                 redisObject.lpush(value.getBytes());
                                 return null;
                             }

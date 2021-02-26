@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
 import network.handler.CommandExecutorHandler;
+import network.handler.EchoHandler;
 import network.handler.RedisFrameDecodeHandler;
 import network.handler.RedisFrameEncodeHandler;
 
@@ -38,14 +39,12 @@ public class RedisServer {
 
                   @Override
                   protected void initChannel(SocketChannel ch) throws Exception {
-                      //ch.pipeline().addLast(new EchoHandler());
-                      ch.pipeline().addLast(new RedisFrameEncodeHandler());
+                      ch.pipeline().addFirst(new RedisFrameEncodeHandler());
+                      ch.pipeline().addFirst(new EchoHandler());
+
 
                       ch.pipeline().addLast(new RedisFrameDecodeHandler());
                       ch.pipeline().addLast(new CommandExecutorHandler());
-
-
-
                   }
               });
             ChannelFuture cf = sb.bind().sync(); // 服务器异步创建绑定

@@ -1,4 +1,4 @@
-package network.encode;
+package network.codec;
 
 import command.model.IRedisResult;
 import container.DataBase;

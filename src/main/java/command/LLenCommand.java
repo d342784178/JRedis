@@ -1,6 +1,13 @@
 package command;
 
+import command.executor.Executors;
+import command.executor.IExecutor;
+import command.executor.ReadExecutor;
+import command.executor.SingleTargetExecutor;
+import command.model.IntRedisResult;
 import command.model.RedisCommand;
+import operating.ZipListList;
+import operating.intf.List;
 
 /**
  * Desc:
@@ -16,6 +23,17 @@ public class LLenCommand implements ICommand {
 
     @Override
     public Object execute(RedisCommand command) {
-        return true;
+        return Executors.build(ReadExecutor.class)
+                        .execute(command, new IExecutor.ExecuteCallback<List>() {
+                            @Override
+                            public IntRedisResult execute(List redisObject, String value) {
+                                return new IntRedisResult(redisObject.llen());
+                            }
+
+                            @Override
+                            public List find(String key) {
+                                return (List) command.getDataBase().getRedisObjectOrDefault(key, new ZipListList());
+                            }
+                        });
     }
 }

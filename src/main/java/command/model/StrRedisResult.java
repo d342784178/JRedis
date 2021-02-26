@@ -3,6 +3,7 @@ package command.model;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;
 
@@ -12,11 +13,12 @@ import java.nio.charset.StandardCharsets;
  * Date: 2021-01-24
  * Time: 21:18
  */
-public class StrIRedisResult implements IRedisResult {
+@ToString
+public class StrRedisResult implements IRedisResult {
     @Getter
     private String str;
 
-    public StrIRedisResult(byte[] str) {
+    public StrRedisResult(byte[] str) {
         this.str = new String(str, StandardCharsets.UTF_8);
     }
 

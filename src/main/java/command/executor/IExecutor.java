@@ -15,7 +15,7 @@ public interface IExecutor {
 
 
     interface ExecuteCallback<T extends RedisObject> {
-        <R> R execute(T redisObject, String value);
+        IRedisResult execute(T redisObject, String value);
 
         T find(String key);
     }

@@ -2,7 +2,6 @@ package command.executor;
 
 import command.model.RedisCommand;
 import command.model.IRedisResult;
-import command.model.StrIRedisResult;
 import operating.intf.RedisObject;
 
 /**
@@ -20,8 +19,7 @@ public class ReadExecutor extends AbstractExecutor {
         if (redisObject == null) {
             return null;
         }
-        Object resultStr = callback.execute(redisObject, null);
-        return new StrIRedisResult((byte[]) resultStr);
+        return callback.execute(redisObject, null);
 
     }
 }
