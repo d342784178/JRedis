@@ -10,7 +10,7 @@ import operating.intf.RedisObject;
  * Date: 2021-01-24
  * Time: 17:16
  */
-public abstract class AbstractCommand<T> implements ICommand<T> {
+public abstract class AbstractCommand<T> implements ICommand {
 
 
     protected T internalExecute(List redisObject, String value) {

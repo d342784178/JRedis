@@ -3,6 +3,7 @@ package command;
 import command.executor.Executors;
 import command.executor.IExecutor;
 import command.executor.SingleTargetExecutor;
+import command.model.IRedisResult;
 import command.model.RedisCommand;
 import command.model.StrRedisResult;
 import operating.ZipListList;
@@ -21,7 +22,7 @@ public class LPushCommand extends AbstractCommand {
     }
 
     @Override
-    public Object execute(RedisCommand command) {
+    public IRedisResult execute(RedisCommand command) {
         return Executors.build(SingleTargetExecutor.class)
                         .execute(command, new IExecutor.ExecuteCallback<List>() {
                             @Override
