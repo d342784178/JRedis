@@ -16,9 +16,9 @@ import java.nio.charset.StandardCharsets;
 @ToString
 public class IntRedisResult implements IRedisResult {
     @Getter
-    private int num;
+    private long num;
 
-    public IntRedisResult(int num) {
+    public IntRedisResult(long num) {
         this.num = num;
     }
 

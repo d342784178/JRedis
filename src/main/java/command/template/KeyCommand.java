@@ -27,7 +27,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         String   keyStr = command.getArgs()[1];
 
         IRedisResult result = null;
-        IRedisObject r      = db.getRedisObject(keyStr);
+        IRedisObject r      = db.redisObject(keyStr);
         if (r != null) {
             //对象存在,则进行类型校验
             checkSupport(r);

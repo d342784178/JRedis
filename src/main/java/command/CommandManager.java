@@ -28,6 +28,8 @@ public class CommandManager {
         predicate.test(new DelCommand());
         predicate.test(new KeysCommand());
         predicate.test(new ObjectCommand());
+        predicate.test(new ExpireCommand());
+        predicate.test(new TtlCommand());
     }
 
     public static ICommand obtainCommand(String commandConstants) {

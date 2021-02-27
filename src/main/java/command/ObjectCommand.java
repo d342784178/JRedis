@@ -43,11 +43,11 @@ public class ObjectCommand extends AbstractCommand {
             if (operateArgs.length() < 1) {
                 throw new WrongArgsException(operateArgs.get(0));
             }
-            IRedisObject redisObject = db.getRedisObject(operateArgs.get(0));
+            IRedisObject redisObject = db.redisObject(operateArgs.get(0));
             if (redisObject == null) {
                 return new NilRedisResult();
             }
-            return new IntRedisResult(Math.toIntExact(redisObject.idletime()));
+            return new IntRedisResult(redisObject.idletime());
         } else {
             return new NilRedisResult();
         }

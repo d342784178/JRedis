@@ -16,8 +16,11 @@ public interface CommandConstants {
     String LLEN    = "llen";
     String LREM    = "lrem";
 
-    String DEL  = "del";
-    String KEYS = "keys";
+    String DEL    = "del";
+    String KEYS   = "keys";
     String OBJECT = "object";
 
+    String EXPIRE = "expire";
+
+    String TTL = "ttl";
 }

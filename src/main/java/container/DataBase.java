@@ -15,17 +15,23 @@ import java.util.stream.Collectors;
  * Time: 17:08
  */
 public class DataBase {
-    Map<String, IRedisObject> redisObjectMap = Maps.newHashMap();
+    private Map<String, IRedisObject> redisObjectMap = Maps.newHashMap();
+    private Map<String, Long>         expiresMap     = Maps.newHashMap();
 
-    public IRedisObject getRedisObject(String key) {
-        return redisObjectMap.get(key);
+
+    public IRedisObject redisObject(String key) {
+        Long expire = expiresMap.get(key);
+        if (expire != null && System.currentTimeMillis() - expire > 0) {
+            //过期
+            redisObjectMap.remove(key);
+            expiresMap.remove(key);
+            return null;
+        } else {
+            //未过期
+            return redisObjectMap.get(key);
+        }
     }
 
-    public IRedisObject getRedisObjectOrDefault(String key, IRedisObject redisObject) {
-        IRedisObject orDefault = redisObjectMap.getOrDefault(key, Accessor.accessor(redisObject));
-        redisObjectMap.put(key, orDefault);
-        return orDefault;
-    }
 
     public IntRedisResult del(String key) {
         IRedisObject remove = redisObjectMap.remove(key);
@@ -40,6 +46,37 @@ public class DataBase {
 
     public List<String> keys(String regex) {
         return redisObjectMap.keySet().stream().filter(s -> s.matches(regex)).collect(Collectors.toList());
+    }
+
+
+    public int expire(String key, long expireTime) {
+        if (redisObjectMap.containsKey(key)) {
+            expiresMap.put(key, System.currentTimeMillis() + expireTime * 1000);
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public long ttl(String key) {
+        if (!redisObjectMap.containsKey(key)) {
+            //不存在=>-2
+            return -2;
+        } else if (!expiresMap.containsKey(key)) {
+            //存在,无过期时间=>-1
+            return -1;
+        } else {
+            long leftTime = (expiresMap.get(key) - System.currentTimeMillis());
+            if (leftTime > 0) {
+                //存在,未过期
+                return leftTime / 1000;
+            } else {
+                //存在,已过期
+                expiresMap.remove(key);
+                redisObjectMap.remove(key);
+                return -2;
+            }
+        }
     }
 
     public static interface Builder<T extends IRedisObject> {
