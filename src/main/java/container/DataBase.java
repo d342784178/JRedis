@@ -32,7 +32,7 @@ public class DataBase {
         return new IntRedisResult(remove != null ? 1 : 0);
     }
 
-    public IRedisObject build(String key, IRedisObject IRedisObject) {
+    public IRedisObject add(String key, IRedisObject IRedisObject) {
         redisObjectMap.put(key, IRedisObject);
         return IRedisObject;
     }

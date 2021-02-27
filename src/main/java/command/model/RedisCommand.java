@@ -1,11 +1,10 @@
 package command.model;
 
 import command.CommandManager;
-import command.ICommand;
+import command.template.ICommand;
 import container.DataBase;
 import exception.UnkonwCommandException;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.Getter;
 
 /**
  * Desc:
@@ -14,18 +13,14 @@ import lombok.Getter;
  * Time: 12:07
  */
 public class RedisCommand {
-    @Getter
     private String[]              args;
-    @Getter
     private ChannelHandlerContext ctx;
+    private DataBase              db;
 
-    @Getter
-    private DataBase dataBase;
-
-    public RedisCommand(String[] args, ChannelHandlerContext ctx, DataBase dataBase) {
+    public RedisCommand(String[] args, ChannelHandlerContext ctx, DataBase db) {
         this.args = args;
         this.ctx = ctx;
-        this.dataBase = dataBase;
+        this.db = db;
     }
 
     public Object exec() {
@@ -34,5 +29,17 @@ public class RedisCommand {
             throw new UnkonwCommandException(args[0]);
         }
         return iCommand.execute(this);
+    }
+
+    public DataBase getDb() {
+        return db;
+    }
+
+    public String[] getArgs() {
+        return args;
+    }
+
+    public ChannelHandlerContext getCtx() {
+        return ctx;
     }
 }

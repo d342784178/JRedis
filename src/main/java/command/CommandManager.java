@@ -1,5 +1,7 @@
 package command;
 
+import command.template.ICommand;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;

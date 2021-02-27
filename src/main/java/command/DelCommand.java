@@ -1,9 +1,10 @@
 package command;
 
 import command.model.IRedisResult;
-import command.model.RedisCommand;
-import operating.intf.IRedisObject;
-import operating.intf.List;
+import command.template.CommandConstants;
+import command.template.NoKeyCommand;
+import container.DataBase;
+import utils.ArrayOperator;
 
 /**
  * Desc:
@@ -11,20 +12,24 @@ import operating.intf.List;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class DelCommand extends AbstractCommand {
+public class DelCommand extends NoKeyCommand {
     @Override
     public String name() {
         return CommandConstants.DEL;
     }
 
     @Override
-    public IRedisResult execute(RedisCommand command) {
-        return command.getDataBase().del(command.getArgs()[1]);
+    public int argsLength() {
+        return -2;
     }
 
+    @Override
+    protected boolean multiArgs() {
+        return true;
+    }
 
     @Override
-    public Class<?>[] support() {
-        return new Class[]{List.class};
+    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
+        return db.del(args.get(0));
     }
 }

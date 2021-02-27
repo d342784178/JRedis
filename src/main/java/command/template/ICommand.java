@@ -1,4 +1,4 @@
-package command;
+package command.template;
 
 import command.model.IRedisResult;
 import command.model.RedisCommand;
@@ -14,6 +14,9 @@ public interface ICommand {
 
     IRedisResult execute(RedisCommand command);
 
-    Class<?>[] support();
-
+    /**
+     * 参数长度
+     * @return
+     */
+    int argsLength();
 }

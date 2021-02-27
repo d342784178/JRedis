@@ -2,9 +2,10 @@ package command;
 
 import command.model.ArrayRedisResult;
 import command.model.IRedisResult;
-import command.model.RedisCommand;
+import command.template.CommandConstants;
+import command.template.NoKeyCommand;
 import container.DataBase;
-import operating.intf.List;
+import utils.ArrayOperator;
 
 /**
  * Desc:
@@ -12,20 +13,21 @@ import operating.intf.List;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class KeysCommand extends AbstractCommand {
+public class KeysCommand extends NoKeyCommand {
     @Override
     public String name() {
         return CommandConstants.KEYS;
     }
 
+
     @Override
-    public IRedisResult execute(RedisCommand command) {
-        DataBase dataBase = command.getDataBase();
-        return new ArrayRedisResult(dataBase.keys(command.getArgs()[1]));
+    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
+        return new ArrayRedisResult(db.keys(args.get(0)));
     }
 
     @Override
-    public Class<?>[] support() {
-        return new Class[]{List.class};
+    public int argsLength() {
+        return 2;
     }
+
 }
