@@ -19,6 +19,11 @@ public class DataBase {
     private Map<String, Long>         expiresMap     = Maps.newHashMap();
 
 
+    /**
+     * 根据key查找redis对象(对象过期时不会返回)
+     * @param key
+     * @return
+     */
     public IRedisObject redisObject(String key) {
         Long expire = expiresMap.get(key);
         if (expire != null && System.currentTimeMillis() - expire > 0) {
@@ -32,23 +37,45 @@ public class DataBase {
     }
 
 
+    /**
+     * 根据key删除redis对象
+     * @param key
+     * @return
+     */
     public IntRedisResult del(String key) {
         IRedisObject remove = redisObjectMap.remove(key);
         expiresMap.remove(key);
         return new IntRedisResult(remove != null ? 1 : 0);
     }
 
+    /**
+     * 新增redis对象
+     * @param key
+     * @param builder
+     * @return
+     */
     public IRedisObject add(String key, Builder builder) {
         IRedisObject accessor = Accessor.accessor(builder.build());
         redisObjectMap.put(key, accessor);
         return accessor;
     }
 
+    /**
+     * 根据regex匹配查找redis对象
+     * @param regex
+     * @return
+     */
     public List<String> keys(String regex) {
         return redisObjectMap.keySet().stream().filter(s -> s.matches(regex)).collect(Collectors.toList());
     }
 
 
+    /**
+     * 给key设置过期时间
+     * @param key
+     * @param expireTime
+     * @return
+     */
     public int expire(String key, long expireTime) {
         if (redisObjectMap.containsKey(key)) {
             expiresMap.put(key, System.currentTimeMillis() + expireTime * 1000);
@@ -58,6 +85,11 @@ public class DataBase {
         }
     }
 
+    /**
+     * 返回剩余过期时间
+     * @param key
+     * @return
+     */
     public long ttl(String key) {
         if (!redisObjectMap.containsKey(key)) {
             //不存在=>-2
