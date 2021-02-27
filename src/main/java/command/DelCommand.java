@@ -4,6 +4,7 @@ import command.model.IRedisResult;
 import command.template.CommandConstants;
 import command.template.NoKeyCommand;
 import container.DataBase;
+import io.netty.channel.ChannelHandlerContext;
 import utils.ArrayOperator;
 
 /**
@@ -29,7 +30,7 @@ public class DelCommand extends NoKeyCommand {
     }
 
     @Override
-    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
+    protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
         return db.del(args.get(0));
     }
 }

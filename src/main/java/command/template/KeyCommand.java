@@ -24,6 +24,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         super.execute(command);
         DataBase db     = command.getDb();
         String[] args   = command.getArgs();
+        String   opearteStr = command.getArgs()[0];
         String   keyStr = command.getArgs()[1];
 
         IRedisResult result = null;
@@ -46,6 +47,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         } else {
             result = innerExecute(db, keyStr, r == null ? null : (T) r);
         }
+        command.getDb().notify(keyStr,opearteStr);
         return result;
     }
 

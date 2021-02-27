@@ -2,6 +2,7 @@ package command.model;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * Date: 2021-01-24
  * Time: 21:19
  */
+@ToString
 public class ArrayRedisResult implements IRedisResult {
 
 
@@ -41,7 +43,6 @@ public class ArrayRedisResult implements IRedisResult {
             result.writeByte('\r');
             result.writeByte('\n');
         }
-
         return result;
     }
 }

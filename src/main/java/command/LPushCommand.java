@@ -1,6 +1,7 @@
 package command;
 
 import command.model.IRedisResult;
+import command.model.IntRedisResult;
 import command.template.CommandConstants;
 import command.template.KeyMultiArgCommand;
 import container.DataBase;
@@ -37,7 +38,7 @@ public class LPushCommand extends KeyMultiArgCommand<List> {
     protected IRedisResult multiArgsExecute(DataBase db, String keyStr, List list, ArrayOperator<String> originArgs,
                                             ArrayOperator<String> sliceArgs) {
         list.lpush(sliceArgs.get(0).getBytes(StandardCharsets.UTF_8));
-        return null;
+        return new IntRedisResult(1);
     }
 
     @Override

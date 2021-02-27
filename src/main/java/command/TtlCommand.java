@@ -5,6 +5,7 @@ import command.model.IntRedisResult;
 import command.template.CommandConstants;
 import command.template.NoKeyCommand;
 import container.DataBase;
+import io.netty.channel.ChannelHandlerContext;
 import utils.ArrayOperator;
 
 /**
@@ -25,8 +26,8 @@ public class TtlCommand extends NoKeyCommand {
     }
 
     @Override
-    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
-        super.innerExecute(db, args);
+    protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
+        super.innerExecute(ctx, db, args);
 
         String keyStr     = args.get(0);
 

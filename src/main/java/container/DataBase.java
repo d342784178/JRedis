@@ -3,6 +3,7 @@ package container;
 import command.model.IntRedisResult;
 import operating.intf.IRedisObject;
 import org.testng.collections.Maps;
+import subscribe.*;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,9 @@ import java.util.stream.Collectors;
  * Time: 17:08
  */
 public class DataBase {
-    private Map<String, IRedisObject> redisObjectMap = Maps.newHashMap();
-    private Map<String, Long>         expiresMap     = Maps.newHashMap();
+    private Map<String, IRedisObject> redisObjectMap   = Maps.newHashMap();
+    private Map<String, Long>         expiresMap       = Maps.newHashMap();
+    private SubscribeManager          subscribeManager = new SubscribeManager();
 
 
     /**
@@ -45,7 +47,7 @@ public class DataBase {
     public IntRedisResult del(String key) {
         IRedisObject remove = redisObjectMap.remove(key);
         expiresMap.remove(key);
-        return new IntRedisResult(remove != null ? 1 : 0);
+        return remove != null ? new IntRedisResult(1) : null;
     }
 
     /**
@@ -55,7 +57,7 @@ public class DataBase {
      * @return
      */
     public IRedisObject add(String key, Builder builder) {
-        IRedisObject accessor = Accessor.accessor(builder.build());
+        IRedisObject accessor = Accessor.accessor(this, key, builder.build());
         redisObjectMap.put(key, accessor);
         return accessor;
     }
@@ -74,6 +76,7 @@ public class DataBase {
                              }).collect(Collectors.toList());
     }
 
+//=======================过期
 
     /**
      * 给key设置过期时间
@@ -122,7 +125,16 @@ public class DataBase {
             return null;
         }
     }
+//==================发布订阅
 
+    public void register(Event.EventType eventType, Subscriber subscriber) {
+        subscribeManager.register(eventType, subscriber);
+    }
+
+    public void notify(String key, String operate) {
+        subscribeManager.notify(new KeySpaceEvent(key, operate));
+        subscribeManager.notify(new KeyEventEvent(key, operate));
+    }
 
     public static interface Builder<T extends IRedisObject> {
         T build();

@@ -4,6 +4,7 @@ import command.model.IRedisResult;
 import command.model.IntRedisResult;
 import command.model.RedisCommand;
 import container.DataBase;
+import io.netty.channel.ChannelHandlerContext;
 import utils.ArrayOperator;
 
 import java.util.Iterator;
@@ -28,12 +29,14 @@ public abstract class NoKeyCommand extends AbstractCommand implements INoKeyComm
             int                             num      = 0;
             while (iterable.hasNext()) {
                 ArrayOperator<String> sliceArgs = iterable.next();
-                innerExecute(db, sliceArgs);
-                num += 1;
+                IRedisResult          tmpResult = innerExecute(command.getCtx(), db, sliceArgs);
+                if (tmpResult != null) {
+                    num += 1;
+                }
             }
             result = new IntRedisResult(num);
         } else {
-            result = innerExecute(db, args);
+            result = innerExecute(command.getCtx(), db, args);
         }
         return result;
     }
@@ -42,7 +45,7 @@ public abstract class NoKeyCommand extends AbstractCommand implements INoKeyComm
         return false;
     }
 
-    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
+    protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
         return null;
     }
 

@@ -5,6 +5,7 @@ import command.model.IRedisResult;
 import command.template.CommandConstants;
 import command.template.NoKeyCommand;
 import container.DataBase;
+import io.netty.channel.ChannelHandlerContext;
 import utils.ArrayOperator;
 
 /**
@@ -21,7 +22,7 @@ public class KeysCommand extends NoKeyCommand {
 
 
     @Override
-    protected IRedisResult innerExecute(DataBase db, ArrayOperator<String> args) {
+    protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
         return new ArrayRedisResult(db.keys(args.get(0)));
     }
 

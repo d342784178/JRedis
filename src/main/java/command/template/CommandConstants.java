@@ -22,5 +22,6 @@ public interface CommandConstants {
 
     String EXPIRE = "expire";
 
-    String TTL = "ttl";
+    String TTL       = "ttl";
+    String SUBSCRIBE = "subscribe";
 }

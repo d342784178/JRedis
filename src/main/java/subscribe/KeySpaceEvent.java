@@ -1,0 +1,33 @@
+package subscribe;
+
+import command.model.ArrayRedisResult;
+import org.testng.collections.Lists;
+
+/**
+ * Desc:
+ * Author: ljdong2
+ * Date: 2021-02-27
+ * Time: 21:58
+ */
+public class KeySpaceEvent implements Event {
+    @Override
+    public EventType eventType() {
+        return EventType.KEYSPACE;
+    }
+
+    private String key;
+    private String operate;
+
+    public KeySpaceEvent(String key, String operate) {
+        this.key = key;
+        this.operate = operate;
+    }
+
+    @Override
+    public void apply(Subscriber subscriber) {
+        if (key.equalsIgnoreCase(subscriber.getParam())) {
+            subscriber.getCtx()
+                      .writeAndFlush(new ArrayRedisResult(Lists.newArrayList("message", subscriber.getArg(), operate)));
+        }
+    }
+}

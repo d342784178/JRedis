@@ -27,8 +27,10 @@ public abstract class KeyMultiArgCommand<T extends IRedisObject> extends KeyComm
         int                             num      = 0;
         while (iterable.hasNext()) {
             ArrayOperator<String> sliceArgs = iterable.next();
-            multiArgsExecute(db, keyStr, t, args, sliceArgs);
-            num += 1;
+            IRedisResult          result    = multiArgsExecute(db, keyStr, t, args, sliceArgs);
+            if (result != null) {
+                num += 1;
+            }
         }
         return new IntRedisResult(num);
 
