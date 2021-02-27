@@ -66,7 +66,12 @@ public class DataBase {
      * @return
      */
     public List<String> keys(String regex) {
-        return redisObjectMap.keySet().stream().filter(s -> s.matches(regex)).collect(Collectors.toList());
+        return redisObjectMap.keySet().stream()
+                             .filter(s -> s.matches(regex))
+                             .filter(s -> {
+                                 Long expireTime = expiresMap.get(s);
+                                 return expireTime == null || expireTime > System.currentTimeMillis();
+                             }).collect(Collectors.toList());
     }
 
 
