@@ -1,7 +1,8 @@
 package operating;
 
-import storage.ZipList;
+import operating.intf.AbsRedisObject;
 import operating.intf.List;
+import storage.ZipList;
 
 /**
  * Desc:
@@ -9,7 +10,7 @@ import operating.intf.List;
  * Date: 2020-12-12
  * Time: 16:36
  */
-public class ZipListList implements List {
+public class ZipListList extends AbsRedisObject implements List {
 
     ZipList zipList = new ZipList();
 

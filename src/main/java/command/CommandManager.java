@@ -27,6 +27,7 @@ public class CommandManager {
         predicate.test(new LLenCommand());
         predicate.test(new DelCommand());
         predicate.test(new KeysCommand());
+        predicate.test(new ObjectCommand());
     }
 
     public static ICommand obtainCommand(String commandConstants) {

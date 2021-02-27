@@ -21,8 +21,8 @@ public class DataBase {
         return redisObjectMap.get(key);
     }
 
-    public IRedisObject getRedisObjectOrDefault(String key, IRedisObject IRedisObject) {
-        IRedisObject orDefault = redisObjectMap.getOrDefault(key, IRedisObject);
+    public IRedisObject getRedisObjectOrDefault(String key, IRedisObject redisObject) {
+        IRedisObject orDefault = redisObjectMap.getOrDefault(key, Accessor.accessor(redisObject));
         redisObjectMap.put(key, orDefault);
         return orDefault;
     }
@@ -32,13 +32,17 @@ public class DataBase {
         return new IntRedisResult(remove != null ? 1 : 0);
     }
 
-    public IRedisObject add(String key, IRedisObject IRedisObject) {
-        redisObjectMap.put(key, IRedisObject);
-        return IRedisObject;
+    public IRedisObject add(String key, Builder builder) {
+        IRedisObject accessor = Accessor.accessor(builder.build());
+        redisObjectMap.put(key, accessor);
+        return accessor;
     }
 
     public List<String> keys(String regex) {
         return redisObjectMap.keySet().stream().filter(s -> s.matches(regex)).collect(Collectors.toList());
     }
 
+    public static interface Builder<T extends IRedisObject> {
+        T build();
+    }
 }

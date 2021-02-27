@@ -25,13 +25,6 @@ public abstract class KeyMultiArgCommand<T extends IRedisObject> extends KeyComm
         int                             argsStep = argsStep();
         Iterator<ArrayOperator<String>> iterable = args.iterable(argsStep);
         int                             num      = 0;
-        if (t == null) {
-            T tempT = newIfNotExist();
-            if (tempT != null) {
-                t = tempT;
-                db.add(keyStr, t);
-            }
-        }
         while (iterable.hasNext()) {
             ArrayOperator<String> sliceArgs = iterable.next();
             multiArgsExecute(db, keyStr, t, args, sliceArgs);
@@ -39,10 +32,6 @@ public abstract class KeyMultiArgCommand<T extends IRedisObject> extends KeyComm
         }
         return new IntRedisResult(num);
 
-    }
-
-    protected T newIfNotExist() {
-        return null;
     }
 
     abstract protected IRedisResult multiArgsExecute(DataBase db, String keyStr, T t, ArrayOperator<String> originArgs,

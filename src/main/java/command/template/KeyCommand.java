@@ -29,8 +29,18 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         IRedisResult result = null;
         IRedisObject r      = db.getRedisObject(keyStr);
         if (r != null) {
+            //对象存在,则进行类型校验
             checkSupport(r);
+        } else {
+            //对象不存在,判断是否需要闯将
+            DataBase.Builder<T> builder = newIfNotExist();
+            if (builder != null) {
+                //创建并加入到db中
+                r = db.add(keyStr, builder);
+            }
         }
+
+        //执行指令
         if (haveArgs()) {
             result = innerExecute(db, keyStr, r == null ? null : (T) r, new ArrayOperator<>(args, 2));
         } else {
@@ -39,14 +49,41 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         return result;
     }
 
+    /**
+     * 是否有参数
+     * @return
+     */
     protected boolean haveArgs() {
         return true;
     }
 
+    /**
+     * 不存在时是否自动创建
+     * @return
+     */
+    protected DataBase.Builder<T> newIfNotExist() {
+        return null;
+    }
+
+    /**
+     * 指令执行(有参数)
+     * @param db
+     * @param keyStr
+     * @param t
+     * @param args
+     * @return
+     */
     protected IRedisResult innerExecute(DataBase db, String keyStr, T t, ArrayOperator<String> args) {
         return null;
     }
 
+    /**
+     * 指令执行(无参数)
+     * @param db
+     * @param keyStr
+     * @param t
+     * @return
+     */
     protected IRedisResult innerExecute(DataBase db, String keyStr, T t) {
         return null;
     }

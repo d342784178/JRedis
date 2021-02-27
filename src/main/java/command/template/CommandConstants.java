@@ -18,5 +18,6 @@ public interface CommandConstants {
 
     String DEL  = "del";
     String KEYS = "keys";
+    String OBJECT = "object";
 
 }

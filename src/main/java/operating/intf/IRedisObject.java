@@ -7,4 +7,8 @@ package operating.intf;
  * Time: 17:09
  */
 public interface IRedisObject {
+
+    long idletime();
+
+    void access();
 }

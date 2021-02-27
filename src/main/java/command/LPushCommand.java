@@ -41,7 +41,7 @@ public class LPushCommand extends KeyMultiArgCommand<List> {
     }
 
     @Override
-    protected List newIfNotExist() {
-        return new ZipListList();
+    protected DataBase.Builder<List> newIfNotExist() {
+        return () -> new ZipListList();
     }
 }

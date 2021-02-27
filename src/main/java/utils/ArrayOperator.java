@@ -1,7 +1,5 @@
 package utils;
 
-import lombok.Getter;
-
 import java.util.Iterator;
 
 /**
@@ -13,7 +11,6 @@ import java.util.Iterator;
 public class ArrayOperator<T> {
     private T[] arrays;
     private int start;
-    @Getter
     private int length;
 
     public ArrayOperator(T[] arrays, int start) {
@@ -30,8 +27,8 @@ public class ArrayOperator<T> {
 
     }
 
-    public ArrayOperator<T> slice(int length) {
-        return new ArrayOperator(arrays, this.start, this.start + length);
+    public ArrayOperator<T> slice(int start) {
+        return this.slice(start, length - start);
     }
 
     public ArrayOperator<T> slice(int start, int length) {
@@ -47,6 +44,10 @@ public class ArrayOperator<T> {
 
     public Iterator<ArrayOperator<T>> iterable(int step) {
         return new InnerIterator(step);
+    }
+
+    public int length() {
+        return length;
     }
 
     private class InnerIterator implements Iterator<ArrayOperator<T>> {
