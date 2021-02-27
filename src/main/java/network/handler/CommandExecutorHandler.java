@@ -1,10 +1,9 @@
 package network.handler;
 
-import command.model.ErrRedisResult;
+import command.model.RedisCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import command.model.RedisCommand;
 
 /**
  * Desc:
@@ -25,13 +24,6 @@ public class CommandExecutorHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.flush();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ctx.writeAndFlush(new ErrRedisResult("unknow exception").encode());
-        //echo(ctx);
     }
 
     private void echo(ChannelHandlerContext ctx) {

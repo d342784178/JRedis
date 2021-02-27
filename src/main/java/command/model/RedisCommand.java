@@ -3,6 +3,7 @@ package command.model;
 import command.CommandManager;
 import command.ICommand;
 import container.DataBase;
+import exception.UnkonwCommandException;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 
@@ -29,6 +30,9 @@ public class RedisCommand {
 
     public Object exec() {
         ICommand iCommand = CommandManager.obtainCommand(args[0]);
+        if (iCommand == null) {
+            throw new UnkonwCommandException(args[0]);
+        }
         return iCommand.execute(this);
     }
 }

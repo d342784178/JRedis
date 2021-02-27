@@ -9,10 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
-import network.handler.CommandExecutorHandler;
-import network.handler.EchoHandler;
-import network.handler.RedisFrameDecodeHandler;
-import network.handler.RedisFrameEncodeHandler;
+import network.handler.*;
 
 /**
  * Desc:
@@ -45,6 +42,7 @@ public class RedisServer {
 
                       ch.pipeline().addLast(new RedisFrameDecodeHandler());
                       ch.pipeline().addLast(new CommandExecutorHandler());
+                      ch.pipeline().addLast(new ExceptionHandler());
                   }
               });
             ChannelFuture cf = sb.bind().sync(); // 服务器异步创建绑定
