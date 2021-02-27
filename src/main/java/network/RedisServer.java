@@ -1,5 +1,6 @@
 package network;
 
+import container.ActiveExpireCycleTask;
 import container.DataBase;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -10,6 +11,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
 import network.handler.*;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Desc:
@@ -25,11 +28,14 @@ public class RedisServer {
     }
 
     public void start() throws Exception {
+        DataBase       db    = new DataBase();
         EventLoopGroup group = new NioEventLoopGroup();
+        group.scheduleAtFixedRate(new ActiveExpireCycleTask(db), 0, 10, TimeUnit.SECONDS);
         try {
             ServerBootstrap sb = new ServerBootstrap();
+
             sb.group(group) // 绑定线程池
-              .childAttr(AttributeKey.valueOf("DB"), new DataBase())
+              .childAttr(AttributeKey.valueOf("DB"), db)
               .channel(NioServerSocketChannel.class) // 指定使用的channel
               .localAddress(this.port)// 绑定监听端口
               .childHandler(new ChannelInitializer<SocketChannel>() { // 绑定客户端连接时候触发操作

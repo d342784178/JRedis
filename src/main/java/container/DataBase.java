@@ -23,8 +23,7 @@ public class DataBase {
         Long expire = expiresMap.get(key);
         if (expire != null && System.currentTimeMillis() - expire > 0) {
             //过期
-            redisObjectMap.remove(key);
-            expiresMap.remove(key);
+            del(key);
             return null;
         } else {
             //未过期
@@ -35,6 +34,7 @@ public class DataBase {
 
     public IntRedisResult del(String key) {
         IRedisObject remove = redisObjectMap.remove(key);
+        expiresMap.remove(key);
         return new IntRedisResult(remove != null ? 1 : 0);
     }
 
@@ -72,12 +72,20 @@ public class DataBase {
                 return leftTime / 1000;
             } else {
                 //存在,已过期
-                expiresMap.remove(key);
-                redisObjectMap.remove(key);
+                del(key);
                 return -2;
             }
         }
     }
+
+    public Map.Entry<String, Long> randomExpireKey() {
+        if (expiresMap.size() > 0) {
+            return expiresMap.entrySet().stream().findFirst().get();
+        } else {
+            return null;
+        }
+    }
+
 
     public static interface Builder<T extends IRedisObject> {
         T build();
