@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
  * Time: 17:08
  */
 public class DataBase {
-    private Map<String, IRedisObject> redisObjectMap   = Maps.newHashMap();
-    private Map<String, Long>         expiresMap       = Maps.newHashMap();
-    private SubscribeManager          subscribeManager = new SubscribeManager();
+    private Map<String, IRedisObject> dict    = Maps.newHashMap();
+    private Map<String, Long>         expires = Maps.newHashMap();
+
+    private SubscribeManager subscribeManager = new SubscribeManager();
 
 
     /**
@@ -27,14 +28,14 @@ public class DataBase {
      * @return
      */
     public IRedisObject redisObject(String key) {
-        Long expire = expiresMap.get(key);
+        Long expire = expires.get(key);
         if (expire != null && System.currentTimeMillis() - expire > 0) {
             //过期
             del(key);
             return null;
         } else {
             //未过期
-            return redisObjectMap.get(key);
+            return dict.get(key);
         }
     }
 
@@ -45,8 +46,8 @@ public class DataBase {
      * @return
      */
     public IntRedisResult del(String key) {
-        IRedisObject remove = redisObjectMap.remove(key);
-        expiresMap.remove(key);
+        IRedisObject remove = dict.remove(key);
+        expires.remove(key);
         return remove != null ? new IntRedisResult(1) : null;
     }
 
@@ -58,7 +59,7 @@ public class DataBase {
      */
     public IRedisObject add(String key, Builder builder) {
         IRedisObject accessor = Accessor.accessor(this, key, builder.build());
-        redisObjectMap.put(key, accessor);
+        dict.put(key, accessor);
         return accessor;
     }
 
@@ -68,12 +69,12 @@ public class DataBase {
      * @return
      */
     public List<String> keys(String regex) {
-        return redisObjectMap.keySet().stream()
-                             .filter(s -> s.matches(regex))
-                             .filter(s -> {
-                                 Long expireTime = expiresMap.get(s);
-                                 return expireTime == null || expireTime > System.currentTimeMillis();
-                             }).collect(Collectors.toList());
+        return dict.keySet().stream()
+                   .filter(s -> s.matches(regex))
+                   .filter(s -> {
+                       Long expireTime = expires.get(s);
+                       return expireTime == null || expireTime > System.currentTimeMillis();
+                   }).collect(Collectors.toList());
     }
 
 //=======================过期
@@ -85,8 +86,8 @@ public class DataBase {
      * @return
      */
     public int expire(String key, long expireTime) {
-        if (redisObjectMap.containsKey(key)) {
-            expiresMap.put(key, System.currentTimeMillis() + expireTime * 1000);
+        if (dict.containsKey(key)) {
+            expires.put(key, System.currentTimeMillis() + expireTime * 1000);
             return 1;
         } else {
             return 0;
@@ -99,14 +100,14 @@ public class DataBase {
      * @return
      */
     public long ttl(String key) {
-        if (!redisObjectMap.containsKey(key)) {
+        if (!dict.containsKey(key)) {
             //不存在=>-2
             return -2;
-        } else if (!expiresMap.containsKey(key)) {
+        } else if (!expires.containsKey(key)) {
             //存在,无过期时间=>-1
             return -1;
         } else {
-            long leftTime = (expiresMap.get(key) - System.currentTimeMillis());
+            long leftTime = (expires.get(key) - System.currentTimeMillis());
             if (leftTime > 0) {
                 //存在,未过期
                 return leftTime / 1000;
@@ -119,8 +120,8 @@ public class DataBase {
     }
 
     public Map.Entry<String, Long> randomExpireKey() {
-        if (expiresMap.size() > 0) {
-            return expiresMap.entrySet().stream().findFirst().get();
+        if (expires.size() > 0) {
+            return expires.entrySet().stream().findFirst().get();
         } else {
             return null;
         }
@@ -134,6 +135,7 @@ public class DataBase {
     public void unregister(Event.EventType eventType, Subscriber subscriber) {
         subscribeManager.unregister(eventType, subscriber);
     }
+
     public void notify(String key, String operate) {
         subscribeManager.notify(new KeySpaceEvent(key, operate));
         subscribeManager.notify(new KeyEventEvent(key, operate));
