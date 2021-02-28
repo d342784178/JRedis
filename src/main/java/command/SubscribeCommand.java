@@ -32,13 +32,19 @@ public class SubscribeCommand extends NoKeyCommand {
     protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
         super.innerExecute(ctx, db, args);
 
-        int    oneIndex  = args.get(0).indexOf("@");
-        int    twoIndex  = args.get(0).indexOf(":");
-        String eventType = args.get(0).substring(0, oneIndex);
-        String dbNum     = args.get(0).substring(oneIndex+1, twoIndex).replace("__","");
-        String param     = args.get(0).substring(twoIndex + 1);
-        db.register(Event.EventType.valueOf(eventType.toUpperCase()
-                                                     .replace("__", "")), new Subscriber(ctx, param, args.get(0)));
+        int oneIndex = args.get(0).indexOf("@");
+        int twoIndex = args.get(0).indexOf(":");
+        String eventTypeStr = args.get(0).substring(0, oneIndex).toUpperCase()
+                                  .replace("__", "");
+        String dbNum = args.get(0).substring(oneIndex + 1, twoIndex).replace("__", "");
+        String param = args.get(0).substring(twoIndex + 1);
+
+        Event.EventType eventType  = Event.EventType.valueOf(eventTypeStr);
+        Subscriber      subscriber = new Subscriber(ctx, param, args.get(0));
+        //注册订阅者
+        db.register(eventType, subscriber);
+        //监听渠道关闭事件注销订阅者
+        ctx.channel().closeFuture().addListener(future -> db.unregister(eventType, subscriber));
         return new ArrayRedisResult(Lists.newArrayList("subscribe", args.get(0), "1"));
     }
 }

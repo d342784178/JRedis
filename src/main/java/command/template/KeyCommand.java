@@ -47,6 +47,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
         } else {
             result = innerExecute(db, keyStr, r == null ? null : (T) r);
         }
+        //发送事件通知
         command.getDb().notify(keyStr,opearteStr);
         return result;
     }

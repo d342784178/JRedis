@@ -1,7 +1,8 @@
 package subscribe;
 
 
-import org.testng.collections.Lists;
+
+import com.google.common.collect.Lists;
 
 import java.util.List;
 
@@ -13,14 +14,22 @@ import java.util.List;
  */
 public class SubscribeManager {
 
-    private List<Subscriber> keySpaceSubscriber = Lists.newArrayList();
-    private List<Subscriber> keyEventSubscriber = Lists.newArrayList();
+    private List<Subscriber> keySpaceSubscriber = Lists.newCopyOnWriteArrayList();
+    private List<Subscriber> keyEventSubscriber = Lists.newCopyOnWriteArrayList();
 
     public void register(Event.EventType eventType, Subscriber subscriber) {
         if (Event.EventType.KEYEVENT == eventType) {
             keyEventSubscriber.add(subscriber);
         } else {
             keySpaceSubscriber.add(subscriber);
+        }
+    }
+
+    public void unregister(Event.EventType eventType, Subscriber subscriber) {
+        if (Event.EventType.KEYEVENT == eventType) {
+            keyEventSubscriber.remove(subscriber);
+        } else {
+            keySpaceSubscriber.remove(subscriber);
         }
     }
 
@@ -37,4 +46,6 @@ public class SubscribeManager {
         }
 
     }
+
+
 }

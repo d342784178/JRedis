@@ -131,6 +131,9 @@ public class DataBase {
         subscribeManager.register(eventType, subscriber);
     }
 
+    public void unregister(Event.EventType eventType, Subscriber subscriber) {
+        subscribeManager.unregister(eventType, subscriber);
+    }
     public void notify(String key, String operate) {
         subscribeManager.notify(new KeySpaceEvent(key, operate));
         subscribeManager.notify(new KeyEventEvent(key, operate));
