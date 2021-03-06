@@ -8,6 +8,7 @@ package operating.intf;
  */
 public abstract class AbsRedisObject implements IRedisObject {
     private long lru;
+    private long expireTime = -1;
 
     public void access() {
         lru = System.currentTimeMillis();
@@ -16,5 +17,15 @@ public abstract class AbsRedisObject implements IRedisObject {
     @Override
     public long idletime() {
         return System.currentTimeMillis() - lru;
+    }
+
+    @Override
+    public long expire() {
+        return expireTime;
+    }
+
+    @Override
+    public void expire(long expireTime) {
+        this.expireTime = expireTime;
     }
 }

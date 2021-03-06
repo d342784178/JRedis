@@ -17,6 +17,7 @@ public class ActiveExpireCycleTask implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("ActiveExpireCycleTask执行");
         long start = System.currentTimeMillis();
 
         while (System.currentTimeMillis() - start <= 10) {

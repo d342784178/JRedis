@@ -1,8 +1,11 @@
 package operating;
 
+import lombok.Getter;
 import operating.intf.AbsRedisObject;
 import operating.intf.List;
+import serialize.RdbEnum;
 import storage.ZipList;
+import utils.ByteArray;
 
 /**
  * Desc:
@@ -12,7 +15,16 @@ import storage.ZipList;
  */
 public class ZipListList extends AbsRedisObject implements List {
 
-    ZipList zipList = new ZipList();
+    @Getter
+    final ZipList zipList;
+
+    public ZipListList() {
+        this.zipList = new ZipList();
+    }
+
+    public ZipListList(ByteArray byteArray) {
+        this.zipList = new ZipList(byteArray);
+    }
 
     @Override
     public void lpush(byte[] content) {
@@ -81,4 +93,10 @@ public class ZipListList extends AbsRedisObject implements List {
         zipList.zipListInsert(entry.getOffset(), content);
         return 1;
     }
+
+    @Override
+    public RdbEnum type() {
+        return RdbEnum.REDIS_LIST_ZIPLIST;
+    }
+
 }

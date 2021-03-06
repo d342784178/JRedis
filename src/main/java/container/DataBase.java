@@ -3,6 +3,7 @@ package container;
 import command.model.IntRedisResult;
 import operating.intf.IRedisObject;
 import org.testng.collections.Maps;
+import serialize.SerializeManager;
 import subscribe.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class DataBase {
     private Map<String, Long>         expires = Maps.newHashMap();
 
     private SubscribeManager subscribeManager = new SubscribeManager();
+    private SerializeManager serializeManager = new SerializeManager(this);
 
 
     /**
@@ -37,6 +39,14 @@ public class DataBase {
             //未过期
             return dict.get(key);
         }
+    }
+
+    public List<Map.Entry<String, IRedisObject>> redisObjects() {
+        return dict.entrySet().stream()
+                   .filter(s -> {
+                       long expireTime = s.getValue().expire();
+                       return expireTime < 0 || expireTime > System.currentTimeMillis();
+                   }).collect(Collectors.toList());
     }
 
 
@@ -69,15 +79,18 @@ public class DataBase {
      * @return
      */
     public List<String> keys(String regex) {
-        return dict.keySet().stream()
-                   .filter(s -> s.matches(regex))
+        return dict.entrySet().stream()
+                   .filter(s -> s.getKey().matches(regex))
                    .filter(s -> {
-                       Long expireTime = expires.get(s);
-                       return expireTime == null || expireTime > System.currentTimeMillis();
-                   }).collect(Collectors.toList());
+                       long expireTime = s.getValue().expire();
+                       return expireTime < 0 || expireTime > System.currentTimeMillis();
+                   }).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
-//=======================过期
+    public static interface Builder<T extends IRedisObject> {
+        T build();
+    }
+    //=======================过期
 
     /**
      * 给key设置过期时间
@@ -86,8 +99,11 @@ public class DataBase {
      * @return
      */
     public int expire(String key, long expireTime) {
-        if (dict.containsKey(key)) {
-            expires.put(key, System.currentTimeMillis() + expireTime * 1000);
+        IRedisObject iRedisObject = dict.get(key);
+        if (iRedisObject != null) {
+            long value = System.currentTimeMillis() + expireTime * 1000;
+            expires.put(key, value);
+            iRedisObject.expire(value);
             return 1;
         } else {
             return 0;
@@ -126,7 +142,7 @@ public class DataBase {
             return null;
         }
     }
-//==================发布订阅
+    //==================发布订阅
 
     public void register(Event.EventType eventType, Subscriber subscriber) {
         subscribeManager.register(eventType, subscriber);
@@ -141,7 +157,15 @@ public class DataBase {
         subscribeManager.notify(new KeyEventEvent(key, operate));
     }
 
-    public static interface Builder<T extends IRedisObject> {
-        T build();
+    //================RDB
+    public void rdbCheck() {
+        if (serializeManager.saveCheck()) {
+            serializeManager.save();
+        }
     }
+
+    public void increaseDirty() {
+        serializeManager.increase(1);
+    }
+
 }

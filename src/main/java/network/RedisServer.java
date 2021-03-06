@@ -11,6 +11,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
 import network.handler.*;
+import serialize.RdbCheckTask;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +31,8 @@ public class RedisServer {
     public void start() throws Exception {
         DataBase       db    = new DataBase();
         EventLoopGroup group = new NioEventLoopGroup();
-        group.scheduleAtFixedRate(new ActiveExpireCycleTask(db), 0, 10, TimeUnit.SECONDS);
+        group.scheduleAtFixedRate(new ActiveExpireCycleTask(db), 0, 5, TimeUnit.SECONDS);
+        group.scheduleAtFixedRate(new RdbCheckTask(db), 0, 5, TimeUnit.SECONDS);
         try {
             ServerBootstrap sb = new ServerBootstrap();
 

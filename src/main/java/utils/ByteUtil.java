@@ -135,9 +135,9 @@ public class ByteUtil {
         }
         if (CharsetUtil.US_ASCII.equals(charset)) {
             // Fast-path for US-ASCII which is used frequently.
-            return new String(array, 0, 0, len);
+            return new String(array, 0, readerIndex, len);
         }
-        return new String(array, 0, len, charset);
+        return new String(array, readerIndex, len, charset);
     }
 
     /**
@@ -146,7 +146,7 @@ public class ByteUtil {
      * @return
      */
     public static int hashCode(ByteArray buffer) {
-        final int aLen      = buffer.capacity();
+        final int aLen      = buffer.length();
         final int byteCount = aLen & 3;
 
         int hashCode   = 1;
@@ -168,7 +168,7 @@ public class ByteUtil {
      * This method is useful when implementing a new buffer type.
      */
     public static boolean equals(ByteArray bufferA, ByteArray bufferB) {
-        return equals(bufferA, bufferB, bufferA.capacity());
+        return equals(bufferA, bufferB, bufferA.length());
     }
 
     /**
@@ -184,11 +184,11 @@ public class ByteUtil {
         if (aStartIndex < 0 || bStartIndex < 0 || length < 0) {
             throw new IllegalArgumentException("All indexes and lengths must be non-negative");
         }
-        if (a.capacity() != b.capacity()) {
+        if (a.length() != b.length()) {
             return false;
         }
 
-        for (int i = a.capacity(); i > 0; i--) {
+        for (int i = a.length(); i > 0; i--) {
             if (a.getByte(aStartIndex) != b.getByte(bStartIndex)) {
                 return false;
             }

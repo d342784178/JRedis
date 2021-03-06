@@ -1,5 +1,6 @@
 package storage;
 
+import lombok.Getter;
 import utils.ByteArray;
 import utils.ByteUtil;
 
@@ -12,6 +13,7 @@ import utils.ByteUtil;
 public class ZipList {
     public static final int INITIAL_CAPACITY = 11;
 
+    @Getter
     private ByteArray content;
 
     private int zlbytesI = 0;
@@ -25,8 +27,15 @@ public class ZipList {
     public ZipList() {
         this.content = new ByteArray(INITIAL_CAPACITY);
         content.setInt(zlbytesI, INITIAL_CAPACITY);
-        content.setInt(zltailI, content.capacity() - 1);
+        content.setInt(zltailI, content.length() - 1);
         content.setShort(zllenI, 0);
+    }
+
+    /**
+     * zipListNew
+     */
+    public ZipList(ByteArray byteArray) {
+        this.content = byteArray;
     }
 
     private int _zlbytes() {
@@ -77,7 +86,7 @@ public class ZipList {
         if (check && offset == _zlend()) {
             return null;
         }
-        return new Entry(offset, content.slice(offset, content.capacity() - offset));
+        return new Entry(offset, content.slice(offset, content.length() - offset));
     }
 
     public static class Entry {

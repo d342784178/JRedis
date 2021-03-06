@@ -11,73 +11,72 @@ import java.util.Arrays;
  * Time: 12:20
  */
 public class ByteArray {
-    private int capacity;
-    private int startI;
-    private int endI;
+    protected int length;
+    protected int startI;
+    protected int readerIndex;
 
-    private byte[] array;
+    protected byte[] array;
 
 
-    public ByteArray(int capacity) {
-        this.capacity = capacity;
-        this.array = new byte[capacity];
+    public ByteArray(int length) {
+        this.length = length;
+        this.array = new byte[length];
         this.startI = 0;
-        this.endI = this.capacity - 1;
+
+        this.readerIndex = this.startI;
     }
 
     public ByteArray(byte[] array) {
         this.array = array;
-        this.capacity = array.length;
+        this.length = array.length;
         this.startI = 0;
-        this.endI = this.capacity - 1;
+
+        this.readerIndex = this.startI;
+    }
+
+    public ByteArray(byte[] array, int length) {
+        this.array = array;
+        this.length = length;
+        this.startI = 0;
+
+        this.readerIndex = this.startI;
     }
 
     public ByteArray(int startI, byte[] array) {
         this.startI = startI;
         this.array = array;
-        this.capacity = array.length - startI;
-        this.endI = array.length;
+        this.length = array.length - startI;
+
+        this.readerIndex = this.startI;
     }
 
     public ByteArray(byte[] array, int startI, int endI) {
         this.array = array;
         this.startI = startI;
-        this.endI = endI;
-        this.capacity = endI - startI + 1;
+        this.length = endI - startI + 1;
+
+        this.readerIndex = this.startI;
     }
 
 
     /**
      * Returns the number of bytes (octets) this buffer can contain.
      */
-    public int capacity() {
-        return capacity;
+    public int length() {
+        return length;
     }
 
     public void newCapacity(int newCapacity) {
         //申请新数组
         byte[] newArray = new byte[newCapacity];
         //进行内容拷贝,区分扩容/缩容
-        System.arraycopy(array, startI, newArray, 0, newCapacity > capacity ? capacity : newCapacity);
+        System.arraycopy(array, startI, newArray, 0, newCapacity > length ? length : newCapacity);
         //更新bytearray参数
         array = newArray;
-        capacity = newCapacity;
+        length = newCapacity;
         startI = 0;
-        endI = capacity - 1;
     }
 
-    /**
-     * 根据startI计算实际偏移量
-     * @param index
-     * @return
-     */
-    private int indexOffset(int index) {
-        return startI + index;
-    }
-
-    private boolean checkOffset(int index) {
-        return index >= 0 && index < capacity;
-    }
 
     /**
      * Gets a boolean at the specified absolute (@code index) in this buffer.
@@ -487,6 +486,128 @@ public class ByteArray {
         return this;
     }
 
+    public ByteArray readBytes(int length) {
+        checkReadableBytes0(length);
+        ByteArray slice = slice(readerIndex - startI, length);
+        readerIndex += length;
+        return slice;
+    }
+
+    public void readBytes(byte[] bytes) {
+        checkReadableBytes0(1);
+        System.arraycopy(array, indexOffset(readerIndex), bytes, 0, bytes.length);
+        readerIndex += bytes.length;
+    }
+
+    public byte readByte() {
+        checkReadableBytes0(1);
+        int  i = readerIndex;
+        byte b = getByte(i);
+        readerIndex = i + 1;
+        return b;
+    }
+
+
+    public boolean readBoolean() {
+        return readByte() != 0;
+    }
+
+
+    public short readUnsignedByte() {
+        return (short) (readByte() & 0xFF);
+    }
+
+
+    public short readShort() {
+        checkReadableBytes0(2);
+        short v = getShort(readerIndex);
+        readerIndex += 2;
+        return v;
+    }
+
+
+    public short readShortLE() {
+        checkReadableBytes0(2);
+        short v = getShortLE(readerIndex);
+        readerIndex += 2;
+        return v;
+    }
+
+
+    public int readUnsignedShort() {
+        return readShort() & 0xFFFF;
+    }
+
+
+    public int readUnsignedShortLE() {
+        return readShortLE() & 0xFFFF;
+    }
+
+    public int readInt() {
+        checkReadableBytes0(4);
+        int v = getInt(readerIndex);
+        readerIndex += 4;
+        return v;
+    }
+
+    public int readIntLE() {
+        checkReadableBytes0(4);
+        int v = getIntLE(readerIndex);
+        readerIndex += 4;
+        return v;
+    }
+
+    public long readUnsignedInt() {
+        return readInt() & 0xFFFFFFFFL;
+    }
+
+    public long readUnsignedIntLE() {
+        return readIntLE() & 0xFFFFFFFFL;
+    }
+
+    public long readLong() {
+        checkReadableBytes0(8);
+        long v = getLong(readerIndex);
+        readerIndex += 8;
+        return v;
+    }
+
+    public long readLongLE() {
+        checkReadableBytes0(8);
+        long v = getLongLE(readerIndex);
+        readerIndex += 8;
+        return v;
+    }
+
+    public char readChar() {
+        return (char) readShort();
+    }
+
+    public float readFloat() {
+        return Float.intBitsToFloat(readInt());
+    }
+
+    public double readDouble() {
+        return Double.longBitsToDouble(readLong());
+    }
+
+    protected void checkReadableBytes0(int minimumReadableBytes) {
+        if (readerIndex + minimumReadableBytes > startI + length) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "readerIndex(%d) + length(%d) exceeds Limit(%d)",
+                    readerIndex, minimumReadableBytes, startI + length));
+        }
+    }
+
+    /**
+     * 根据startI计算实际偏移量
+     * @param index
+     * @return
+     */
+    private int indexOffset(int index) {
+        int i = startI + index;
+        return i;
+    }
 
     /**
      * Returns a copy of this buffer's sub-region.  Modifying the content of
@@ -512,36 +633,14 @@ public class ByteArray {
         Arrays.fill(array, indexOffset(index), indexOffset(index + len), (byte) 0);
     }
 
-
     /**
      * Returns the backing byte array of this buffer.
      * @exception UnsupportedOperationException if there no accessible backing byte array
      */
     public byte[] array() {
-        byte[] dst = new byte[capacity];
-        System.arraycopy(array, indexOffset(0), dst, 0, capacity);
+        byte[] dst = new byte[length];
+        System.arraycopy(array, indexOffset(0), dst, 0, length);
         return dst;
-    }
-
-
-    /**
-     * Decodes this buffer's readable bytes into a string with the specified
-     * character set name.  This method is identical to
-     * {@code buf.toString(buf.readerIndex(), buf.readableBytes(), charsetName)}.
-     * This method does not modify {@code readerIndex} or {@code writerIndex} of
-     * this buffer.
-     */
-    public String toString(Charset charset) {
-        return toString(0, array.length, charset);
-    }
-
-    /**
-     * Decodes this buffer's sub-region into a string with the specified
-     * character set.  This method does not modify {@code readerIndex} or
-     * {@code writerIndex} of this buffer.
-     */
-    public String toString(int index, int length, Charset charset) {
-        return ByteUtil.decodeString(array, indexOffset(index), length, charset);
     }
 
     /**
@@ -570,10 +669,26 @@ public class ByteArray {
         return this == o || (o instanceof ByteArray && ByteUtil.equals(this, (ByteArray) o));
     }
 
-
     @Override
     public String toString() {
         return Arrays.toString(array());
+    }
+
+    public String toString(Charset charset) {
+        return toString(0, charset);
+    }
+
+    public String toString(int index, Charset charset) {
+        return toString(index, length, charset);
+    }
+
+    public String toString(int index, int length, Charset charset) {
+        return ByteUtil.decodeString(array, indexOffset(index), length, charset);
+    }
+
+    public String toReadableString(Charset charset) {
+        return toString(readerIndex - startI, length - (readerIndex - startI), charset);
+
     }
 
     public static void main(String args[]) {

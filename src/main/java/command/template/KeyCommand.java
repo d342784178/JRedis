@@ -22,10 +22,10 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
     @Override
     final public IRedisResult execute(RedisCommand command) {
         super.execute(command);
-        DataBase db     = command.getDb();
-        String[] args   = command.getArgs();
+        DataBase db         = command.getDb();
+        String[] args       = command.getArgs();
         String   opearteStr = command.getArgs()[0];
-        String   keyStr = command.getArgs()[1];
+        String   keyStr     = command.getArgs()[1];
 
         IRedisResult result = null;
         IRedisObject r      = db.redisObject(keyStr);
@@ -48,7 +48,8 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
             result = innerExecute(db, keyStr, r == null ? null : (T) r);
         }
         //发送事件通知
-        command.getDb().notify(keyStr,opearteStr);
+        command.getDb().notify(keyStr, opearteStr);
+        command.getDb().increaseDirty();
         return result;
     }
 
