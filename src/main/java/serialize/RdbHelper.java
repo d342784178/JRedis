@@ -8,6 +8,7 @@ import operating.ZipListList;
 import operating.intf.IRedisObject;
 import org.testng.Assert;
 import org.testng.collections.Lists;
+import utils.AutoReadByteArray;
 import utils.ByteArray;
 
 import java.io.File;
@@ -57,7 +58,9 @@ public class RdbHelper {
         public void save(List<Map.Entry<String, IRedisObject>> entries) {
             Path filePath = Paths.get("rdb");
             File file     = filePath.toFile();
-            file.deleteOnExit();
+            if (file.exists()) {
+                file.delete();
+            }
             try (FileChannel rdb = FileChannel.open(filePath,
                     new StandardOpenOption[]{StandardOpenOption.CREATE_NEW,
                             StandardOpenOption.APPEND})) {
@@ -117,9 +120,10 @@ public class RdbHelper {
     private static class RdbLoader {
         Map<String, IRedisObject> load() {
             HashMap<String, IRedisObject> map = Maps.newHashMap();
-            try (FileChannel rdb = FileChannel.open(Paths.get("rdb"))) {
+            try (FileChannel rdb = FileChannel.open(Paths.get("rdb"), StandardOpenOption.READ)) {
                 System.out.println("RDB LOAD START");
                 {
+                    //手动读取文件头
                     ByteBuffer buffer     = ByteBuffer.allocate(9);
                     int        readLength = rdb.read(buffer);
                     ByteArray  byteArray  = new ByteArray(buffer.array(), readLength);
@@ -127,40 +131,36 @@ public class RdbHelper {
                     Assert.assertEquals(redisTag, "REDIS");
                     int dbVersion = byteArray.readInt();
                 }
-                ByteBuffer buffer = ByteBuffer.allocate(512);
-                int        readLength;
-                while ((readLength = rdb.read(buffer)) > 0) {
-                    ByteArray byteArray  = new ByteArray(buffer.array(), readLength);
-                    RdbEnum   rdbEnum;
-                    long      expireTime = -1;
-                    boolean   end        = false;
-                    while (!end && (rdbEnum = RdbEnum.codeOf(byteArray.readByte())) != null) {
-                        switch (rdbEnum) {
-                            case REDIS_SELECTDB:
-                                int dbNum = byteArray.readByte();
-                                break;
-                            case REDIS_EXPIRETIME_MS:
-                                expireTime = byteArray.readLong();
 
-                                break;
-                            case REDIS_LIST_ZIPLIST:
-                                int keyLength = byteArray.readInt();
-                                String key = byteArray.readBytes(keyLength).toString(StandardCharsets.UTF_8);
-                                int valueLength = byteArray.readInt();
-                                ByteArray valueByteArray = byteArray.readBytes(valueLength);
-                                ZipListList value = new ZipListList(valueByteArray);
-                                if (expireTime < 0 || System.currentTimeMillis() < expireTime) {
-                                    value.expire(expireTime);
-                                    map.put(key, value);
-                                }
-
-                                break;
-                            case REDIS_EOF:
-                                end = true;
-                                break;
-                            default:
-                                break;
-                        }
+                AutoReadByteArray byteArray  = new AutoReadByteArray(rdb, ByteBuffer.allocate(512));
+                RdbEnum           rdbEnum;
+                long              expireTime = -1;
+                boolean           end        = false;
+                while (!end && (rdbEnum = RdbEnum.codeOf(byteArray.readByte())) != null) {
+                    switch (rdbEnum) {
+                        case REDIS_SELECTDB:
+                            int dbNum = byteArray.readByte();
+                            break;
+                        case REDIS_EXPIRETIME_MS:
+                            expireTime = byteArray.readLong();
+                            break;
+                        case REDIS_LIST_ZIPLIST:
+                            int keyLength = byteArray.readInt();
+                            String key = byteArray.readBytes(keyLength).toString(StandardCharsets.UTF_8);
+                            int valueLength = byteArray.readInt();
+                            ByteArray valueByteArray = byteArray.readBytes(valueLength);
+                            ZipListList value = new ZipListList(valueByteArray);
+                            if (expireTime < 0 || System.currentTimeMillis() < expireTime) {
+                                value.expire(expireTime);
+                                map.put(key, value);
+                                expireTime = -1;
+                            }
+                            break;
+                        case REDIS_EOF:
+                            end = true;
+                            break;
+                        default:
+                            break;
                     }
                 }
                 System.out.println("RDB LOAD END");
@@ -174,17 +174,18 @@ public class RdbHelper {
 
     public static void main(String args[]) throws Exception {
         List<Map.Entry<String, IRedisObject>> entries = Lists.newArrayList();
-        for (int i = 0; i < 100; i++) {
+        int                                   num     = 100;
+        for (int i = 0; i < num; i++) {
             ZipListList zipListList = new ZipListList();
             zipListList.lpush("2".getBytes(StandardCharsets.UTF_8));
             zipListList.lpush("3".getBytes(StandardCharsets.UTF_8));
-            zipListList.expire(System.currentTimeMillis() + 1000 * 3);
+            zipListList.expire(System.currentTimeMillis() + 1000 * 100);
             entries.add(new AbstractMap.SimpleEntry<>(i + "", zipListList));
         }
         new RdbSaver().save(entries);
 
         Map<String, IRedisObject> load = new RdbLoader().load();
-        Assert.assertEquals(load.size(), 100000);
+        Assert.assertEquals(load.size(), num);
     }
 
 }

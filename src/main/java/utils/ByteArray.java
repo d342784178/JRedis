@@ -36,8 +36,8 @@ public class ByteArray {
 
     public ByteArray(byte[] array, int length) {
         this.array = array;
-        this.length = length;
         this.startI = 0;
+        this.length = length;
 
         this.readerIndex = this.startI;
     }
@@ -50,10 +50,10 @@ public class ByteArray {
         this.readerIndex = this.startI;
     }
 
-    public ByteArray(byte[] array, int startI, int endI) {
+    public ByteArray(byte[] array, int startI, int length) {
         this.array = array;
         this.startI = startI;
-        this.length = endI - startI + 1;
+        this.length = length;
 
         this.readerIndex = this.startI;
     }
@@ -625,7 +625,7 @@ public class ByteArray {
         if (index + length > array.length) {
             throw new IllegalArgumentException(String.format("index+length>array.length:%d", array.length));
         }
-        return new ByteArray(array, indexOffset(index), indexOffset(index) + length - 1);
+        return new ByteArray(array, indexOffset(index), length);
     }
 
     public void transfer(int index, int len, int dstIndex) {
