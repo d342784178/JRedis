@@ -2,10 +2,10 @@ package command;
 
 import command.model.IRedisResult;
 import command.template.CommandConstants;
-import command.template.NoKeyCommand;
+import command.template.KeyNoArgCommand;
 import container.DataBase;
-import io.netty.channel.ChannelHandlerContext;
-import utils.ArrayOperator;
+import operating.intf.IRedisObject;
+import operating.intf.List;
 
 /**
  * Desc:
@@ -13,7 +13,7 @@ import utils.ArrayOperator;
  * Date: 2021-01-24
  * Time: 12:11
  */
-public class DelCommand extends NoKeyCommand {
+public class DelCommand extends KeyNoArgCommand {
     @Override
     public String name() {
         return CommandConstants.DEL;
@@ -24,13 +24,14 @@ public class DelCommand extends NoKeyCommand {
         return -2;
     }
 
+
     @Override
-    protected boolean multiArgs() {
-        return true;
+    public Class<?>[] support() {
+        return new Class[]{List.class};
     }
 
     @Override
-    protected IRedisResult innerExecute(ChannelHandlerContext ctx, DataBase db, ArrayOperator<String> args) {
-        return db.del(args.get(0));
+    protected IRedisResult innerExecute(DataBase db, String keyStr, IRedisObject t) {
+        return db.del(keyStr);
     }
 }

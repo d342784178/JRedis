@@ -58,7 +58,7 @@ public class RedisObjectManager {
     public IntRedisResult del(String key) {
         IRedisObject remove = dict.remove(key);
         expires.remove(key);
-        return remove != null ? new IntRedisResult(1) : null;
+        return remove != null ? new IntRedisResult(1) : new IntRedisResult(0);
     }
 
     /**
