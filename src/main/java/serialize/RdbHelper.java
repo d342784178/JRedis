@@ -122,20 +122,16 @@ public class RdbHelper {
             HashMap<String, IRedisObject> map = Maps.newHashMap();
             try (FileChannel rdb = FileChannel.open(Paths.get("rdb"), StandardOpenOption.READ)) {
                 System.out.println("RDB LOAD START");
-                {
-                    //手动读取文件头
-                    ByteBuffer buffer     = ByteBuffer.allocate(9);
-                    int        readLength = rdb.read(buffer);
-                    ByteArray  byteArray  = new ByteArray(buffer.array(), readLength);
-                    String     redisTag   = byteArray.readBytes(5).toString(StandardCharsets.UTF_8);
-                    Assert.assertEquals(redisTag, "REDIS");
-                    int dbVersion = byteArray.readInt();
-                }
+                AutoReadByteArray byteArray = new AutoReadByteArray(rdb, ByteBuffer.allocate(512));
+                //手动读取文件头
+                String redisTag = byteArray.readBytes(5).toString(StandardCharsets.UTF_8);
+                Assert.assertEquals(redisTag, "REDIS");
+                int dbVersion = byteArray.readInt();
 
-                AutoReadByteArray byteArray  = new AutoReadByteArray(rdb, ByteBuffer.allocate(512));
-                RdbEnum           rdbEnum;
-                long              expireTime = -1;
-                boolean           end        = false;
+
+                RdbEnum rdbEnum;
+                long    expireTime = -1;
+                boolean end        = false;
                 while (!end && (rdbEnum = RdbEnum.codeOf(byteArray.readByte())) != null) {
                     switch (rdbEnum) {
                         case REDIS_SELECTDB:
