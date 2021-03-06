@@ -32,6 +32,8 @@ public class CommandManager {
         predicate.test(new TtlCommand());
 
         predicate.test(new SubscribeCommand());
+
+        predicate.test(new SaveCommand());
     }
 
     public static ICommand obtainCommand(String commandConstants) {

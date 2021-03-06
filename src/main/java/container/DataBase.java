@@ -2,7 +2,7 @@ package container;
 
 import command.model.IntRedisResult;
 import operating.intf.IRedisObject;
-import serialize.SerializeManager;
+import serialize.RdbManager;
 import subscribe.*;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class DataBase {
 
     private RedisObjectManager redisObjectManager = new RedisObjectManager(this);
     private SubscribeManager   subscribeManager   = new SubscribeManager();
-    private SerializeManager serializeManager = new SerializeManager(this);
+    private RdbManager         rdbManager         = new RdbManager(this);
 
 
     /**
@@ -104,20 +104,24 @@ public class DataBase {
 
     //================RDB
     public void rdbCheck() {
-        if (serializeManager.saveCheck()) {
-            serializeManager.save();
+        if (rdbManager.saveCheck()) {
+            rdbSave();
         }
     }
 
+    public void rdbSave() {
+        rdbManager.save();
+    }
+
     public void rdbLoad() {
-        Map<String, IRedisObject> load = serializeManager.load();
+        Map<String, IRedisObject> load = rdbManager.load();
         for (Map.Entry<String, IRedisObject> entry : load.entrySet()) {
             add(entry.getKey(), entry::getValue);
         }
     }
 
     public void increaseDirty() {
-        serializeManager.increase(1);
+        rdbManager.increaseDirty(1);
     }
 
 }

@@ -24,4 +24,5 @@ public interface CommandConstants {
 
     String TTL       = "ttl";
     String SUBSCRIBE = "subscribe";
+    String SAVE      = "save";
 }

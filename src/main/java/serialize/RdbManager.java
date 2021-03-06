@@ -14,13 +14,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Date: 2021-02-28
  * Time: 13:30
  */
-public class SerializeManager {
+public class RdbManager {
 
     private final AtomicInteger dirty      = new AtomicInteger(0);
     private final SaveParam[]   saveParams = new SaveParam[4];
     private final DataBase      db;
     private final RdbHelper     rdbHelper;
-    private       long          lastsave   = System.currentTimeMillis();
+
+    private long lastsave = System.currentTimeMillis();
 
     {
         saveParams[0] = new SaveParam(900, 1);
@@ -29,12 +30,12 @@ public class SerializeManager {
         saveParams[3] = new SaveParam(10, 2);
     }
 
-    public SerializeManager(DataBase db) {
+    public RdbManager(DataBase db) {
         this.db = db;
         rdbHelper = new RdbHelper(db);
     }
 
-    public int increase(int increasement) {
+    public int increaseDirty(int increasement) {
         while (true) {
             int     i  = dirty.get();
             boolean ok = dirty.compareAndSet(i, i + increasement);

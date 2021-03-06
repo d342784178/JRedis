@@ -36,6 +36,8 @@ public class RdbHelper {
     private final RdbSaver  rdbSaver;
     private final RdbLoader rdbLoader;
 
+    private volatile boolean rdbLock = false;
+
     public RdbHelper(DataBase db) {
         this.db = db;
         rdbSaver = new RdbSaver();
@@ -44,7 +46,11 @@ public class RdbHelper {
 
 
     public void save() {
-        rdbSaver.save(db.redisObjects());
+        if (!rdbLock) {
+            rdbLock = true;
+            rdbSaver.save(db.redisObjects());
+            rdbLock = false;
+        }
     }
 
     public Map<String, IRedisObject> load() {
