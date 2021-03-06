@@ -2,13 +2,12 @@ package serialize;
 
 import com.google.common.collect.Maps;
 import container.DataBase;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import operating.ZipListList;
 import operating.intf.IRedisObject;
 import org.testng.Assert;
 import org.testng.collections.Lists;
 import utils.AutoReadByteArray;
+import utils.AutoWriteByteArray;
 import utils.ByteArray;
 
 import java.io.File;
@@ -65,7 +64,7 @@ public class RdbHelper {
                     new StandardOpenOption[]{StandardOpenOption.CREATE_NEW,
                             StandardOpenOption.APPEND})) {
                 System.out.println("RDB SAVE START");
-                ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(1024);
+                AutoWriteByteArray buffer = new AutoWriteByteArray(rdb, ByteBuffer.allocate(512));
                 buffer.writeBytes("REDIS".getBytes(StandardCharsets.UTF_8));
                 buffer.writeInt(1);
                 {//DB部分
@@ -87,28 +86,10 @@ public class RdbHelper {
                         byte[] array = ((ZipListList) value.origin()).getZipList().getContent().array();
                         buffer.writeInt(array.length);
                         buffer.writeBytes(array);
-
-
-                        //写缓冲区超过一半,先写到文件中,防止缓冲区爆
-                        if (buffer.readableBytes() > 500) {
-                            ByteBuffer byteBuffer = buffer.nioBuffer();
-                            while (byteBuffer.hasRemaining()) {
-                                rdb.write(byteBuffer);
-                            }
-                            buffer.readerIndex(buffer.writerIndex());
-                            buffer.discardReadBytes();
-                        }
                     }
                 }
                 buffer.writeByte(REDIS_EOF.code());
-                while (buffer.readableBytes() > 0) {
-                    ByteBuffer byteBuffer = buffer.nioBuffer();
-                    while (byteBuffer.hasRemaining()) {
-                        rdb.write(byteBuffer);
-                    }
-                    buffer.readerIndex(buffer.writerIndex());
-                    buffer.discardReadBytes();
-                }
+                buffer.flush();
                 System.out.println("RDB SAVE END");
             } catch (IOException e) {
                 e.printStackTrace();
