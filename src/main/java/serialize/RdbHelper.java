@@ -12,7 +12,6 @@ import utils.ByteArray;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -64,7 +63,7 @@ public class RdbHelper {
                     new StandardOpenOption[]{StandardOpenOption.CREATE_NEW,
                             StandardOpenOption.APPEND})) {
                 System.out.println("RDB SAVE START");
-                AutoWriteByteArray buffer = new AutoWriteByteArray(rdb, ByteBuffer.allocate(512));
+                AutoWriteByteArray buffer = new AutoWriteByteArray(rdb, 512);
                 buffer.writeBytes("REDIS".getBytes(StandardCharsets.UTF_8));
                 buffer.writeInt(1);
                 {//DB部分
@@ -103,7 +102,7 @@ public class RdbHelper {
             HashMap<String, IRedisObject> map = Maps.newHashMap();
             try (FileChannel rdb = FileChannel.open(Paths.get("rdb"), StandardOpenOption.READ)) {
                 System.out.println("RDB LOAD START");
-                AutoReadByteArray byteArray = new AutoReadByteArray(rdb, ByteBuffer.allocate(512));
+                AutoReadByteArray byteArray = new AutoReadByteArray(rdb, 512);
                 //手动读取文件头
                 String redisTag = byteArray.readBytes(5).toString(StandardCharsets.UTF_8);
                 Assert.assertEquals(redisTag, "REDIS");

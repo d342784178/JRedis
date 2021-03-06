@@ -18,10 +18,10 @@ public class AutoWriteByteArray extends ByteArray {
 
     private int writerIndex;
 
-    public AutoWriteByteArray(FileChannel channel, ByteBuffer byteBuffer) {
-        super(byteBuffer.array());
+    public AutoWriteByteArray(FileChannel channel, int bufferSize) {
+        super(new byte[bufferSize]);
         this.channel = channel;
-        this.byteBuffer = byteBuffer;
+        this.byteBuffer = ByteBuffer.allocate(bufferSize);
     }
 
 

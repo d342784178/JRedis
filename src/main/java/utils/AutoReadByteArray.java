@@ -19,12 +19,10 @@ public class AutoReadByteArray extends ByteArray {
     protected int readerIndex;
 
 
-    public AutoReadByteArray(FileChannel channel, ByteBuffer byteBuffer) {
-        super(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit() == byteBuffer.capacity() ?
-                byteBuffer.position() : byteBuffer
-                .limit());
+    public AutoReadByteArray(FileChannel channel, int bufferSize) {
+        super(new byte[0]);
         this.channel = channel;
-        this.byteBuffer = byteBuffer;
+        this.byteBuffer = ByteBuffer.allocate(512);
         this.readerIndex = 0;
     }
 
@@ -154,7 +152,6 @@ public class AutoReadByteArray extends ByteArray {
                     System.arraycopy(byteBuffer.array(), 0, newArray,
                             oldArrayLeft, readLength);
                     this.array = newArray;
-                    this.startI = 0;
                     this.length = newArray.length;
                     this.readerIndex = 0;
                 }
