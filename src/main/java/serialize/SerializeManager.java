@@ -3,7 +3,9 @@ package serialize;
 import container.DataBase;
 import lombok.Getter;
 import lombok.ToString;
+import operating.intf.IRedisObject;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -57,13 +59,13 @@ public class SerializeManager {
     }
 
     public void save() {
-        save();
+        rdbHelper.save();
         lastsave = System.currentTimeMillis();
         dirty.updateAndGet(operand -> 0);
     }
 
-    public void load() {
-        rdbHelper.load();
+    public Map<String, IRedisObject> load() {
+        return rdbHelper.load();
     }
 
     private static boolean check(SaveParam saveParam, long timeDuration, int dirty) {

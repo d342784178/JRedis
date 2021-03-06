@@ -3,6 +3,7 @@ package command.template;
 import command.model.IRedisResult;
 import command.model.RedisCommand;
 import container.DataBase;
+import container.RedisObjectManager;
 import operating.intf.IRedisObject;
 import utils.ArrayOperator;
 
@@ -34,7 +35,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
             checkSupport(r);
         } else {
             //对象不存在,判断是否需要闯将
-            DataBase.Builder<T> builder = newIfNotExist();
+            RedisObjectManager.Builder<T> builder = newIfNotExist();
             if (builder != null) {
                 //创建并加入到db中
                 r = db.add(keyStr, builder);
@@ -65,7 +66,7 @@ public abstract class KeyCommand<T extends IRedisObject> extends AbstractCommand
      * 不存在时是否自动创建
      * @return
      */
-    protected DataBase.Builder<T> newIfNotExist() {
+    protected RedisObjectManager.Builder<T> newIfNotExist() {
         return null;
     }
 

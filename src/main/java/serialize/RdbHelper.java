@@ -47,8 +47,8 @@ public class RdbHelper {
         rdbSaver.save(db.redisObjects());
     }
 
-    public void load() {
-        rdbLoader.load();
+    public Map<String, IRedisObject> load() {
+        return rdbLoader.load();
     }
 
     private static class RdbSaver {

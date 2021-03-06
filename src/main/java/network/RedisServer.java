@@ -31,6 +31,7 @@ public class RedisServer {
     public void start() throws Exception {
         DataBase       db    = new DataBase();
         EventLoopGroup group = new NioEventLoopGroup();
+        db.rdbLoad();
         group.scheduleAtFixedRate(new ActiveExpireCycleTask(db), 0, 5, TimeUnit.SECONDS);
         group.scheduleAtFixedRate(new RdbCheckTask(db), 0, 5, TimeUnit.SECONDS);
         try {

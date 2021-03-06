@@ -5,6 +5,7 @@ import command.model.IntRedisResult;
 import command.template.CommandConstants;
 import command.template.KeyMultiArgCommand;
 import container.DataBase;
+import container.RedisObjectManager;
 import operating.ZipListList;
 import operating.intf.List;
 import utils.ArrayOperator;
@@ -42,7 +43,7 @@ public class LPushCommand extends KeyMultiArgCommand<List> {
     }
 
     @Override
-    protected DataBase.Builder<List> newIfNotExist() {
+    protected RedisObjectManager.Builder<List> newIfNotExist() {
         return () -> new ZipListList();
     }
 }
